@@ -1,12 +1,14 @@
-import 'package:example/useCase/showcase_app/playgrounds/linearGauge_playground.dart';
 import 'package:example/useCase/showcase_app/playgrounds/pointer_playground.dart';
 import 'package:example/useCase/speedometer.dart';
 import 'package:example/usecase/server_utilization.dart';
+import 'package:example/usecase/showcase_app/playgrounds/range_linear_gauge_playground.dart';
+import 'package:example/usecase/showcase_app/playgrounds/ruler_playground.dart';
 import 'package:example/usecase/temperature_meter.dart';
 import 'package:flutter/material.dart';
 
 import '../../useCase/height_indicator.dart';
 import '../../useCase/progress_bar.dart';
+import '../../usecase/showcase_app/playgrounds/linear_gauge_playground.dart';
 import '../../usecase/vaccination_graph.dart';
 import '../separator.dart';
 import 'playgrounds/valueBar_playground.dart';
@@ -73,5 +75,15 @@ List linearGaugeUseCases = [
     "title": "ValueBar API",
     "widget": const ValueBarPlayGround(),
     "index": 9,
+  },
+  {
+    "title": "RangeLinearGauge API",
+    "widget": const RangeLinearGaugePlayGround(),
+    "index": 10,
+  },
+  {
+    "title": "Ruler API",
+    "widget": const RulerPlayGround(),
+    "index": 11,
   }
 ];

@@ -5,14 +5,25 @@ import 'package:example/pointer_alignment_example.dart';
 import 'package:example/range_vertical.dart';
 import 'package:example/shaders.dart';
 import 'package:example/tickness_extend_example.dart';
+import 'package:example/usecase/showcase_app/data.dart';
+import 'package:example/usecase/showcase_app/home.dart';
 import 'package:example/valuebar_position.dart';
 import 'package:flutter/material.dart';
 
 void main() {
   runApp(
-    const MaterialApp(
+    MaterialApp(
+      theme: ThemeData.light(
+        useMaterial3: true,
+      ).copyWith(
+        colorScheme: ColorScheme.light(
+          background: backgroundColor,
+          primary: Colors.blueAccent,
+          secondary: Colors.red,
+        ),
+      ),
       debugShowCheckedModeBanner: false,
-      home: MyGaugeExample(),
+      home: HomePage(selectedItem: 0),
     ),
   );
 }

@@ -97,8 +97,6 @@ class _ValueBarPlayGroundState extends State<ValueBarPlayGround> {
                         onValueChanged: (p1) {
                           setState(() {
                             valueBarOffset = p1;
-
-                            print(valueBarOffset);
                           });
                         },
                       ),
@@ -457,6 +455,7 @@ class LinearGaugeView extends StatelessWidget {
             ],
             gaugeOrientation: orientation,
             rulers: RulerStyle(
+              labelOffset: 10,
               inverseRulers: reverse,
               rulerPosition: orientation == GaugeOrientation.horizontal
                   ? RulerPosition.bottom

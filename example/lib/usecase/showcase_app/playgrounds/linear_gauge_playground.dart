@@ -29,7 +29,6 @@ class _LinearGaugePlayGroundState extends State<LinearGaugePlayGround> {
             flex: 3,
             child: Container(
                 margin: const EdgeInsets.only(left: 30),
-                // color: Colors.red,
                 width: MediaQuery.of(context).size.width / 2,
                 height: MediaQuery.of(context).size.height / 1,
                 child: Center(
