@@ -1,8 +1,7 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geekyants_flutter_gauges/gauges.dart';
-
-import '../../../usecase/showcase_app/data.dart';
 
 class RulerPlayGround extends StatefulWidget {
   const RulerPlayGround({super.key});
@@ -51,22 +50,19 @@ class _RulerPlayGroundState extends State<RulerPlayGround> {
                 padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: Card(
                   child: Container(
-                    color: backgroundColor,
+                    color: const Color(0xffF5F8FA),
                     padding: const EdgeInsets.all(8),
                     height: MediaQuery.of(context).size.height,
                     width: 700,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text('Gauge Orientation'),
                         buildOrientationHandler(),
-                        const Divider(),
                         const Text('Inverse axis'),
                         inverseAxisHandler(),
-                        const Text('Show Label'),
                         showLabelHandler(),
-                        const Text("Ruler position"),
                         buildRulerPositionHandler(),
                         const Text("Label offset"),
                         buildLabelOffsetHandler(),
@@ -89,55 +85,46 @@ class _RulerPlayGroundState extends State<RulerPlayGround> {
     );
   }
 
-  buildOrientationHandler() {
-    return Row(
-      children: [
-        Radio<GaugeOrientation>(
-          value: GaugeOrientation.horizontal,
-          groupValue: orientation,
-          onChanged: (GaugeOrientation? value) {
-            setState(() {
-              orientation = value!;
-            });
-          },
-        ),
-        const Text('Horizontal'),
-        Radio<GaugeOrientation>(
-          value: GaugeOrientation.vertical,
-          groupValue: orientation,
-          onChanged: (GaugeOrientation? value) {
-            setState(() {
-              orientation = value!;
-            });
-          },
-        ),
-        const Text('Vertical'),
-      ],
+  Widget buildOrientationHandler() {
+    final Map<GaugeOrientation, Widget> children = {
+      GaugeOrientation.horizontal: const Text('Horizontal'),
+      GaugeOrientation.vertical: const Text('Vertical'),
+    };
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: CupertinoSlidingSegmentedControl<GaugeOrientation>(
+        groupValue: orientation,
+        children: children,
+        onValueChanged: (GaugeOrientation? value) {
+          setState(() {
+            if (value != null) {
+              orientation = value;
+            }
+          });
+        },
+      ),
     );
   }
 
   Widget inverseAxisHandler() {
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          reverse = !reverse;
-        });
-      },
-      child: Row(
-        children: <Widget>[
-          Checkbox(
-              activeColor: Colors.red,
-              value: reverse,
-              splashRadius: 15,
-              onChanged: (bool? value) {
-                setState(() {
-                  if (value != null) {
-                    reverse = value;
-                  }
-                });
-              }),
-          const Text('Inverse axis', style: TextStyle(fontSize: 14))
-        ],
+    final Map<bool, Widget> children = {
+      false: const Text('Normal axis', style: TextStyle(fontSize: 12)),
+      true: const Text('Reverse axis', style: TextStyle(fontSize: 12)),
+    };
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: CupertinoSlidingSegmentedControl<bool>(
+        groupValue: reverse,
+        children: children,
+        onValueChanged: (bool? value) {
+          setState(() {
+            if (value != null) {
+              reverse = value;
+            }
+          });
+        },
       ),
     );
   }
@@ -145,36 +132,39 @@ class _RulerPlayGroundState extends State<RulerPlayGround> {
   buildRulerPositionHandler() {
     if (orientation == GaugeOrientation.horizontal) {
       return Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Container(
             child: const Text('Ruler Position'),
           ),
-          const Text(":"),
           Padding(
             padding: const EdgeInsets.only(left: 1),
             child: ButtonTheme(
-              alignedDropdown: true,
-              child: DropdownButton<String>(
-                value: rulerPosition.toString(),
-                items: [
-                  DropdownMenuItem<String>(
-                    value: RulerPosition.bottom.toString(),
-                    child: const Text('Bottom'),
-                  ),
-                  DropdownMenuItem<String>(
-                    value: RulerPosition.center.toString(),
-                    child: const Text('Center'),
-                  ),
-                  DropdownMenuItem<String>(
-                    value: RulerPosition.top.toString(),
-                    child: const Text('Top'),
-                  ),
-                ],
-                onChanged: (String? value) {
-                  setState(() {
-                    handleRulerPositionChange(value);
-                  });
-                },
+              alignedDropdown: false,
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<String>(
+                  borderRadius: BorderRadius.circular(10),
+                  value: rulerPosition.toString(),
+                  items: [
+                    DropdownMenuItem<String>(
+                      value: RulerPosition.bottom.toString(),
+                      child: const Text('Bottom'),
+                    ),
+                    DropdownMenuItem<String>(
+                      value: RulerPosition.center.toString(),
+                      child: const Text('Center'),
+                    ),
+                    DropdownMenuItem<String>(
+                      value: RulerPosition.top.toString(),
+                      child: const Text('Top'),
+                    ),
+                  ],
+                  onChanged: (String? value) {
+                    setState(() {
+                      handleRulerPositionChange(value);
+                    });
+                  },
+                ),
               ),
             ),
           )
@@ -274,27 +264,22 @@ class _RulerPlayGroundState extends State<RulerPlayGround> {
         });
   }
 
-  showLabelHandler() {
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          showLabel = !showLabel;
-        });
-      },
+  Widget showLabelHandler() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
-        children: <Widget>[
-          Checkbox(
-              activeColor: Colors.red,
-              value: showLabel,
-              splashRadius: 15,
-              onChanged: (bool? value) {
-                setState(() {
-                  if (value != null) {
-                    showLabel = value;
-                  }
-                });
-              }),
-          const Text('Show Label', style: TextStyle(fontSize: 14))
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          const Text('Show Label', style: TextStyle(fontSize: 12)),
+          CupertinoSwitch(
+            activeColor: Colors.blue,
+            value: showLabel,
+            onChanged: (bool value) {
+              setState(() {
+                showLabel = value;
+              });
+            },
+          ),
         ],
       ),
     );
@@ -308,47 +293,41 @@ class _RulerPlayGroundState extends State<RulerPlayGround> {
         });
       },
       child: Row(
-        children: <Widget>[
-          Checkbox(
-              activeColor: Colors.red,
-              value: showSecondaryRuler,
-              splashRadius: 15,
-              onChanged: (bool? value) {
-                setState(() {
-                  if (value != null) {
-                    showSecondaryRuler = value;
-                  }
-                });
-              }),
-          const Text('Show Secondary Ruler', style: TextStyle(fontSize: 14))
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          const Text('Show Secondary Ruler', style: TextStyle(fontSize: 12)),
+          CupertinoSwitch(
+            activeColor: Colors.blue,
+            trackColor:
+                MaterialStateColor.resolveWith((states) => Colors.white),
+            value: showSecondaryRuler,
+            onChanged: (bool value) {
+              setState(() {
+                showSecondaryRuler = value;
+              });
+            },
+          ),
         ],
       ),
     );
   }
 
   showPrimaryRulerHandler() {
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          showPrimaryRuler = !showPrimaryRuler;
-        });
-      },
-      child: Row(
-        children: <Widget>[
-          Checkbox(
-              activeColor: Colors.red,
-              value: showPrimaryRuler,
-              splashRadius: 15,
-              onChanged: (bool? value) {
-                setState(() {
-                  if (value != null) {
-                    showPrimaryRuler = value;
-                  }
-                });
-              }),
-          const Text('Show Primary Ruler', style: TextStyle(fontSize: 14))
-        ],
-      ),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        const Text('Show Primary Ruler', style: TextStyle(fontSize: 12)),
+        CupertinoSwitch(
+          activeColor: Colors.blue,
+          trackColor: MaterialStateColor.resolveWith((states) => Colors.white),
+          value: showPrimaryRuler,
+          onChanged: (bool value) {
+            setState(() {
+              showPrimaryRuler = value;
+            });
+          },
+        ),
+      ],
     );
   }
 }

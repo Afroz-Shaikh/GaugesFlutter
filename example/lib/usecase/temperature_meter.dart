@@ -17,10 +17,8 @@ class TemperatureMeter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const Color backgroundColor = Colors.white;
     const Color primaryColor = Colors.black;
     return Scaffold(
-      backgroundColor: backgroundColor,
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [

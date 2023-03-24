@@ -27,10 +27,10 @@ class _SpeedometerState extends State<Speedometer> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      // backgroundColor: Colors.black,
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(28.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -45,11 +45,11 @@ class _SpeedometerState extends State<Speedometer> {
                       speed.toStringAsFixed(0),
                       style: speed > 150
                           ? const TextStyle(
-                              color: Colors.redAccent,
+                              color: Color(0xffe91717),
                               fontWeight: FontWeight.bold,
                               fontSize: 120)
                           : const TextStyle(
-                              color: Colors.white,
+                              color: Colors.black,
                               fontWeight: FontWeight.bold,
                               fontSize: 120),
                     ),
@@ -71,7 +71,7 @@ class _SpeedometerState extends State<Speedometer> {
                       child: const Text(
                         "kmph",
                         style: TextStyle(
-                            color: Colors.white,
+                            color: Colors.black,
                             fontWeight: FontWeight.bold,
                             fontSize: 30),
                       ),
@@ -86,7 +86,10 @@ class _SpeedometerState extends State<Speedometer> {
                   enableAnimation: true,
                   valueBar: [
                     ValueBar(
-                        color: const Color(0xff17c2e9),
+                        // color: const Color(0xff17c2e9),
+                        color: speed > 150
+                            ? const Color(0xffe91717)
+                            : Color.fromARGB(255, 0, 94, 226),
                         value: speed,
                         valueBarThickness: 30,
                         borderRadius: 30,
