@@ -1,7 +1,9 @@
+import 'package:example/showcase_app/data.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:geekyants_flutter_gauges/gauges.dart';
 
-import '../../../usecase/showcase_app/data.dart';
+import '../widgets/playground_header.dart';
 
 class PointerPlayGround extends StatefulWidget {
   const PointerPlayGround({super.key});
@@ -46,32 +48,26 @@ class _PointerPlayGroundState extends State<PointerPlayGround> {
               padding: const EdgeInsets.symmetric(horizontal: 8),
               child: Card(
                 child: Container(
-                  color: backgroundColor,
+                  color: const Color(0xffF5F8FA),
                   padding: const EdgeInsets.all(8),
                   height: MediaQuery.of(context).size.height,
-                  width: 700,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('Gauge Orientation'),
+                      const PlayGroundHeader(text: "Orientation"),
                       buildOrientationHandler(),
                       const Divider(),
-                      const Text('Inverse axis'),
+                      const PlayGroundHeader(text: "Axis"),
                       inverseAxisHandler(),
                       const Divider(),
-                      const Text('Value'),
+                      const PlayGroundHeader(text: "Pointer"),
                       buildValueHandler(),
                       const Divider(),
-                      const Text('Pointer Shape'),
                       buildPointerWidgetHandler(),
-                      const Divider(),
-                      const Text('Pointer Position'),
                       buildPointerPositionHandler(),
-                      const Divider(),
-                      const Text('Pointer Alignment'),
                       buildPointerAlignmentHandler(),
-                      const Divider(),
+                      Divider(),
                       const Text('Pointer Height'),
                       buildPointerHeightHandler(),
                       const Text('Pointer Width'),
@@ -87,96 +83,90 @@ class _PointerPlayGroundState extends State<PointerPlayGround> {
     ));
   }
 
-  buildOrientationHandler() {
-    return Row(
-      children: [
-        Radio<GaugeOrientation>(
-          value: GaugeOrientation.horizontal,
-          groupValue: orientation,
-          onChanged: (GaugeOrientation? value) {
-            setState(() {
-              orientation = value!;
-            });
-          },
-        ),
-        const Text('Horizontal'),
-        Radio<GaugeOrientation>(
-          value: GaugeOrientation.vertical,
-          groupValue: orientation,
-          onChanged: (GaugeOrientation? value) {
-            setState(() {
-              orientation = value!;
-            });
-          },
-        ),
-        const Text('Vertical'),
-      ],
+  Widget buildOrientationHandler() {
+    final Map<GaugeOrientation, Widget> children = {
+      GaugeOrientation.horizontal: const Text('Horizontal'),
+      GaugeOrientation.vertical: const Text('Vertical'),
+    };
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: CupertinoSlidingSegmentedControl<GaugeOrientation>(
+        groupValue: orientation,
+        children: children,
+        onValueChanged: (GaugeOrientation? value) {
+          setState(() {
+            if (value != null) {
+              orientation = value;
+            }
+          });
+        },
+      ),
     );
   }
 
   Widget inverseAxisHandler() {
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          reverse = !reverse;
-        });
-      },
-      child: Row(
-        children: <Widget>[
-          Checkbox(
-              activeColor: Colors.red,
-              value: reverse,
-              splashRadius: 15,
-              onChanged: (bool? value) {
-                setState(() {
-                  if (value != null) {
-                    reverse = value;
-                  }
-                });
-              }),
-          const Text('Inverse axis', style: TextStyle(fontSize: 14))
-        ],
+    final Map<bool, Widget> children = {
+      false: const Text('Normal axis', style: TextStyle(fontSize: 12)),
+      true: const Text('Reverse axis', style: TextStyle(fontSize: 12)),
+    };
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: CupertinoSlidingSegmentedControl<bool>(
+        groupValue: reverse,
+        children: children,
+        onValueChanged: (bool? value) {
+          setState(() {
+            if (value != null) {
+              reverse = value;
+            }
+          });
+        },
       ),
     );
   }
 
   Widget buildPointerWidgetHandler() {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
         Container(
           margin: const EdgeInsets.only(left: 0),
           child: const Text('Pointer Shape', style: TextStyle(fontSize: 14)),
         ),
-        const Text(':'),
         Padding(
           padding: const EdgeInsets.only(left: 1),
           child: ButtonTheme(
               alignedDropdown: true,
-              child: DropdownButton<String>(
-                  value: shape.toString(),
-                  items: const [
-                    DropdownMenuItem(
-                      value: 'PointerShape.circle',
-                      child: Text('circle'),
-                    ),
-                    DropdownMenuItem(
-                      value: 'PointerShape.rectangle',
-                      child: Text('rectangle'),
-                    ),
-                    DropdownMenuItem(
-                      value: 'PointerShape.triangle',
-                      child: Text('triangle'),
-                    ),
-                    DropdownMenuItem(
-                      value: 'PointerShape.diamond',
-                      child: Text('diamond'),
-                    ),
-                  ],
-                  onChanged: (String? value) {
-                    setState(() {
-                      handleShapeChange(value);
-                    });
-                  })),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<String>(
+                    borderRadius: BorderRadius.circular(10),
+                    value: shape.toString(),
+                    items: const [
+                      DropdownMenuItem(
+                        value: 'PointerShape.circle',
+                        child: Text('circle '),
+                      ),
+                      DropdownMenuItem(
+                        value: 'PointerShape.rectangle',
+                        child: Text('rectangle'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'PointerShape.triangle',
+                        child: Text('triangle '),
+                      ),
+                      DropdownMenuItem(
+                        value: 'PointerShape.diamond',
+                        child: Text('diamond '),
+                      ),
+                    ],
+                    onChanged: (String? value) {
+                      setState(() {
+                        handleShapeChange(value);
+                      });
+                    }),
+              )),
         )
       ],
     );
@@ -201,45 +191,48 @@ class _PointerPlayGroundState extends State<PointerPlayGround> {
 
   buildPointerPositionHandler() {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
         Container(
           margin: const EdgeInsets.only(left: 0),
           child: const Text('Pointer Position', style: TextStyle(fontSize: 14)),
         ),
-        const Text(':'),
         Padding(
           padding: const EdgeInsets.only(left: 1),
           child: ButtonTheme(
               alignedDropdown: true,
-              child: DropdownButton<String>(
-                  value: position.toString(),
-                  items: const [
-                    DropdownMenuItem(
-                      value: 'PointerPosition.center',
-                      child: Text('center'),
-                    ),
-                    DropdownMenuItem(
-                      value: 'PointerPosition.top',
-                      child: Text('top'),
-                    ),
-                    DropdownMenuItem(
-                      value: 'PointerPosition.bottom',
-                      child: Text('bottom'),
-                    ),
-                    DropdownMenuItem(
-                      value: 'PointerPosition.left',
-                      child: Text('left'),
-                    ),
-                    DropdownMenuItem(
-                      value: 'PointerPosition.right',
-                      child: Text('right'),
-                    ),
-                  ],
-                  onChanged: (String? value) {
-                    setState(() {
-                      handlePositionChange(value);
-                    });
-                  })),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<String>(
+                    borderRadius: BorderRadius.circular(10),
+                    value: position.toString(),
+                    items: const [
+                      DropdownMenuItem(
+                        value: 'PointerPosition.center',
+                        child: Text('center'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'PointerPosition.top',
+                        child: Text('top'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'PointerPosition.bottom',
+                        child: Text('bottom'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'PointerPosition.left',
+                        child: Text('left'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'PointerPosition.right',
+                        child: Text('right'),
+                      ),
+                    ],
+                    onChanged: (String? value) {
+                      setState(() {
+                        handlePositionChange(value);
+                      });
+                    }),
+              )),
         )
       ],
     );
@@ -281,38 +274,41 @@ class _PointerPlayGroundState extends State<PointerPlayGround> {
 
   buildPointerAlignmentHandler() {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
         Container(
           margin: const EdgeInsets.only(left: 0),
           child:
               const Text('Pointer Alignment', style: TextStyle(fontSize: 14)),
         ),
-        const Text(':'),
         Padding(
           padding: const EdgeInsets.only(left: 1),
           child: ButtonTheme(
               alignedDropdown: true,
-              child: DropdownButton<String>(
-                  value: alignment.toString(),
-                  items: const [
-                    DropdownMenuItem(
-                      value: 'PointerAlignment.center',
-                      child: Text('center'),
-                    ),
-                    DropdownMenuItem(
-                      value: 'PointerAlignment.start',
-                      child: Text('start'),
-                    ),
-                    DropdownMenuItem(
-                      value: 'PointerAlignment.end',
-                      child: Text('end'),
-                    ),
-                  ],
-                  onChanged: (String? value) {
-                    setState(() {
-                      handleAlignmentChange(value);
-                    });
-                  })),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<String>(
+                    borderRadius: BorderRadius.circular(10),
+                    value: alignment.toString(),
+                    items: const [
+                      DropdownMenuItem(
+                        value: 'PointerAlignment.center',
+                        child: Text('center'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'PointerAlignment.start',
+                        child: Text('start'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'PointerAlignment.end',
+                        child: Text('end'),
+                      ),
+                    ],
+                    onChanged: (String? value) {
+                      setState(() {
+                        handleAlignmentChange(value);
+                      });
+                    }),
+              )),
         )
       ],
     );

@@ -1,8 +1,10 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geekyants_flutter_gauges/gauges.dart';
 
-import '../../../usecase/showcase_app/data.dart';
+import '../data.dart';
+import '../widgets/playground_header.dart';
 
 class ValueBarPlayGround extends StatefulWidget {
   const ValueBarPlayGround({super.key});
@@ -61,28 +63,30 @@ class _ValueBarPlayGroundState extends State<ValueBarPlayGround> {
               padding: const EdgeInsets.symmetric(horizontal: 8),
               child: Card(
                 child: Container(
-                  color: backgroundColor,
+                  color: const Color(0xffF5F8FA),
                   padding: const EdgeInsets.all(8),
                   height: MediaQuery.of(context).size.height,
                   width: 700,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('Gauge Orientation'),
+                      const PlayGroundHeader(text: "Gauge Orientation"),
                       buildOrientationHandler(),
                       const Divider(),
-                      const Text('Inverse axis'),
+                      const PlayGroundHeader(text: "Axis "),
                       inverseAxisHandler(),
                       const Divider(),
-                      const Text('Value'),
+                      const PlayGroundHeader(text: "Value"),
                       buildValueHandler(),
                       const Divider(),
-                      const Text('Pointer Position'),
+                      const PlayGroundHeader(text: "Position"),
                       buildValueBarPositionHandler(),
                       const Divider(),
-                      const Text('Value Bar Thickness'),
+                      const PlayGroundHeader(text: "ValueBar Properties"),
+                      SizedBox(height: 20),
                       buildNumInput(
+                        label: "Thickness",
                         numController: _thicknessController,
                         onValueChanged: (p0) {
                           setState(() {
@@ -90,9 +94,9 @@ class _ValueBarPlayGroundState extends State<ValueBarPlayGround> {
                           });
                         },
                       ),
-                      const Divider(),
-                      const Text('Value Bar Offset'),
+                      const SizedBox(height: 20),
                       buildNumInput(
+                        label: "Offset",
                         numController: _offsetController,
                         onValueChanged: (p1) {
                           setState(() {
@@ -100,9 +104,9 @@ class _ValueBarPlayGroundState extends State<ValueBarPlayGround> {
                           });
                         },
                       ),
-                      const Divider(),
-                      const Text('Border Radius'),
+                      const SizedBox(height: 20),
                       buildNumInput(
+                        label: "Radius",
                         numController: _radiusController,
                         onValueChanged: (p2) {
                           setState(() {
@@ -123,101 +127,95 @@ class _ValueBarPlayGroundState extends State<ValueBarPlayGround> {
     ));
   }
 
-  buildOrientationHandler() {
-    return Row(
-      children: [
-        Radio<GaugeOrientation>(
-          value: GaugeOrientation.horizontal,
-          groupValue: orientation,
-          onChanged: (GaugeOrientation? value) {
-            setState(() {
-              orientation = value!;
-            });
-          },
-        ),
-        const Text('Horizontal'),
-        Radio<GaugeOrientation>(
-          value: GaugeOrientation.vertical,
-          groupValue: orientation,
-          onChanged: (GaugeOrientation? value) {
-            setState(() {
-              orientation = value!;
-            });
-          },
-        ),
-        const Text('Vertical'),
-      ],
+  Widget buildOrientationHandler() {
+    final Map<GaugeOrientation, Widget> children = {
+      GaugeOrientation.horizontal: const Text('Horizontal'),
+      GaugeOrientation.vertical: const Text('Vertical'),
+    };
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: CupertinoSlidingSegmentedControl<GaugeOrientation>(
+        groupValue: orientation,
+        children: children,
+        onValueChanged: (GaugeOrientation? value) {
+          setState(() {
+            if (value != null) {
+              orientation = value;
+            }
+          });
+        },
+      ),
     );
   }
 
   Widget inverseAxisHandler() {
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          reverse = !reverse;
-        });
-      },
-      child: Row(
-        children: <Widget>[
-          Checkbox(
-              activeColor: Colors.red,
-              value: reverse,
-              splashRadius: 15,
-              onChanged: (bool? value) {
-                setState(() {
-                  if (value != null) {
-                    reverse = value;
-                  }
-                });
-              }),
-          const Text('Inverse axis', style: TextStyle(fontSize: 14))
-        ],
+    final Map<bool, Widget> children = {
+      false: const Text('Normal axis', style: TextStyle(fontSize: 12)),
+      true: const Text('Reverse axis', style: TextStyle(fontSize: 12)),
+    };
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: CupertinoSlidingSegmentedControl<bool>(
+        groupValue: reverse,
+        children: children,
+        onValueChanged: (bool? value) {
+          setState(() {
+            if (value != null) {
+              reverse = value;
+            }
+          });
+        },
       ),
     );
   }
 
   buildValueBarPositionHandler() {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
         Container(
           margin: const EdgeInsets.only(left: 0),
           child:
               const Text('ValueBar Position', style: TextStyle(fontSize: 14)),
         ),
-        const Text(':'),
         Padding(
           padding: const EdgeInsets.only(left: 1),
           child: ButtonTheme(
               alignedDropdown: true,
-              child: DropdownButton<String>(
-                  value: position.toString(),
-                  items: const [
-                    DropdownMenuItem(
-                      value: 'ValueBarPosition.center',
-                      child: Text('center'),
-                    ),
-                    DropdownMenuItem(
-                      value: 'ValueBarPosition.top',
-                      child: Text('top'),
-                    ),
-                    DropdownMenuItem(
-                      value: 'ValueBarPosition.bottom',
-                      child: Text('bottom'),
-                    ),
-                    DropdownMenuItem(
-                      value: 'ValueBarPosition.left',
-                      child: Text('left'),
-                    ),
-                    DropdownMenuItem(
-                      value: 'ValueBarPosition.right',
-                      child: Text('right'),
-                    ),
-                  ],
-                  onChanged: (String? value) {
-                    setState(() {
-                      handlePositionChange(value);
-                    });
-                  })),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<String>(
+                    borderRadius: BorderRadius.circular(10),
+                    value: position.toString(),
+                    items: const [
+                      DropdownMenuItem(
+                        value: 'ValueBarPosition.center',
+                        child: Text('center'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'ValueBarPosition.top',
+                        child: Text('top'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'ValueBarPosition.bottom',
+                        child: Text('bottom'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'ValueBarPosition.left',
+                        child: Text('left'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'ValueBarPosition.right',
+                        child: Text('right'),
+                      ),
+                    ],
+                    onChanged: (String? value) {
+                      setState(() {
+                        handlePositionChange(value);
+                      });
+                    }),
+              )),
         )
       ],
     );
@@ -272,14 +270,17 @@ class _ValueBarPlayGroundState extends State<ValueBarPlayGround> {
   buildNumInput({
     required TextEditingController numController,
     required Function(double) onValueChanged,
+    required String label,
   }) {
     return Row(
       children: <Widget>[
+        Expanded(child: Text(label)),
         Expanded(
           flex: 1,
           child: TextFormField(
             textAlign: TextAlign.center,
             decoration: InputDecoration(
+              fillColor: Colors.white,
               contentPadding: const EdgeInsets.all(8.0),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(5.0),
@@ -360,37 +361,40 @@ class _ValueBarPlayGroundState extends State<ValueBarPlayGround> {
 // Handle Rounded Edge Style
   buildEdgeStyleHandler() {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
         Container(
           margin: const EdgeInsets.only(left: 0),
           child: const Text('Edge Style', style: TextStyle(fontSize: 14)),
         ),
-        const Text(':'),
         Padding(
           padding: const EdgeInsets.only(left: 1),
           child: ButtonTheme(
               alignedDropdown: true,
-              child: DropdownButton<String>(
-                  value: edgeStyle.toString(),
-                  items: const [
-                    DropdownMenuItem(
-                      value: 'LinearEdgeStyle.startCurve',
-                      child: Text('Start Curve'),
-                    ),
-                    DropdownMenuItem(
-                      value: 'LinearEdgeStyle.endCurve',
-                      child: Text('End Curve'),
-                    ),
-                    DropdownMenuItem(
-                      value: 'LinearEdgeStyle.bothCurve',
-                      child: Text('Both Curve'),
-                    ),
-                  ],
-                  onChanged: (String? value) {
-                    setState(() {
-                      handleEdgeStyleChange(value);
-                    });
-                  })),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<String>(
+                    borderRadius: BorderRadius.circular(10),
+                    value: edgeStyle.toString(),
+                    items: const [
+                      DropdownMenuItem(
+                        value: 'LinearEdgeStyle.startCurve',
+                        child: Text('Start Curve'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'LinearEdgeStyle.endCurve',
+                        child: Text('End Curve'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'LinearEdgeStyle.bothCurve',
+                        child: Text('Both Curve'),
+                      ),
+                    ],
+                    onChanged: (String? value) {
+                      setState(() {
+                        handleEdgeStyleChange(value);
+                      });
+                    }),
+              )),
         )
       ],
     );

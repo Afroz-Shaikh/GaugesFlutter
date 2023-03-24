@@ -1,11 +1,9 @@
-import 'package:example/usecase/showcase_app/code/code_theme.dart';
+import 'package:example/showcase_app/data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_highlight/flutter_highlight.dart';
 // import 'package:flutter_highlight/themes/xcode.dart';
 import 'package:flutter_highlight/themes/atom-one-dark.dart';
-
-import '../../usecase/showcase_app/data.dart';
 
 int selectedIndex = 0;
 
@@ -26,65 +24,72 @@ class _HomePageState extends State<HomePage> {
     bool displayMobileLayout = MediaQuery.of(context).size.width < 600;
     return Scaffold(
         appBar: const MainHeader(),
-        backgroundColor: backgroundColor,
+        backgroundColor: Colors.white,
         body: Row(
           children: [
             if (!displayMobileLayout)
-              Drawer(
-                width: 250,
-                backgroundColor: backgroundColor,
-                child: ListView(
-                  children: [
-                    ExpansionPanelList(
-                      expansionCallback: (int index, bool isExpanded) {
-                        setState(() {
-                          showCaseIsOpen = !showCaseIsOpen;
-                        });
-                      },
-                      children: [
-                        ExpansionPanel(
-                          headerBuilder:
-                              (BuildContext context, bool isExpanded) =>
-                                  const ShowCaseHeader(),
-                          body: showCaseListView(),
-                          isExpanded: showCaseIsOpen,
-                        ),
-                      ],
-                    ),
-                    ExpansionPanelList(
-                      expansionCallback: (panelIndex, isExpanded) {
-                        setState(() {
-                          playgroundIsOpen = !playgroundIsOpen;
-                        });
-                      },
-                      children: [
-                        ExpansionPanel(
-                            headerBuilder: (BuildContext context, isExpanded) =>
-                                const ListTile(
-                                  minLeadingWidth: 10,
-                                  title: Text("PlayGround"),
-                                ),
-                            body: showCasePlaygroundView(),
-                            isExpanded: playgroundIsOpen)
-                      ],
-                    )
-                  ],
+              Container(
+                margin: const EdgeInsets.all(8),
+                child: Drawer(
+                  elevation: 0,
+                  width: 250,
+                  // backgroundColor: Color(0xfff5f8fa),
+                  backgroundColor: Colors.white,
+                  child: ListView(
+                    children: [
+                      ExpansionPanelList(
+                        expandedHeaderPadding: EdgeInsets.all(0),
+                        expansionCallback: (int index, bool isExpanded) {
+                          setState(() {
+                            showCaseIsOpen = !showCaseIsOpen;
+                          });
+                        },
+                        children: [
+                          ExpansionPanel(
+                            backgroundColor: Color(0xfff5f8fa),
+                            canTapOnHeader: true,
+                            headerBuilder:
+                                (BuildContext context, bool isExpanded) =>
+                                    const ShowCaseHeader(),
+                            body: showCaseListView(),
+                            isExpanded: showCaseIsOpen,
+                          ),
+                        ],
+                      ),
+                      ExpansionPanelList(
+                        expandedHeaderPadding: const EdgeInsets.all(0),
+                        expansionCallback: (panelIndex, isExpanded) {
+                          setState(() {
+                            playgroundIsOpen = !playgroundIsOpen;
+                          });
+                        },
+                        children: [
+                          ExpansionPanel(
+                              backgroundColor: const Color(0xfff5f8fa),
+                              headerBuilder:
+                                  (BuildContext context, isExpanded) =>
+                                      const ListTile(
+                                        minLeadingWidth: 10,
+                                        title: Text("PlayGround"),
+                                      ),
+                              body: showCasePlaygroundView(),
+                              isExpanded: playgroundIsOpen)
+                        ],
+                      )
+                    ],
+                  ),
                 ),
               ),
             SizedBox(
-              width: displayMobileLayout ? null : 10,
+              width: displayMobileLayout ? null : 2,
             ),
             Expanded(
               child: Container(
-                decoration: BoxDecoration(boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.5),
-                    spreadRadius: 5,
-                    blurRadius: 7,
-                    offset: const Offset(0, 3),
-                  ),
-                ], borderRadius: const BorderRadius.all(Radius.circular(20))),
-                margin: displayMobileLayout ? null : const EdgeInsets.all(5),
+                decoration: BoxDecoration(
+                  border:
+                      Border.all(color: Colors.grey.withOpacity(0.2), width: 1),
+                ),
+                margin: displayMobileLayout ? null : const EdgeInsets.all(10),
                 child: Scaffold(
                   appBar: AppBar(
                     iconTheme:
@@ -92,17 +97,16 @@ class _HomePageState extends State<HomePage> {
                     elevation: 0,
                     centerTitle: false,
                     title: Text(
-                      linearGaugeUseCases[selectedIndex]["title"],
-                      style: const TextStyle(color: Colors.black),
+                      menuItems[selectedIndex].title,
+                      style: const TextStyle(color: Colors.black, fontSize: 14),
                     ),
                     automaticallyImplyLeading:
                         displayMobileLayout ? true : false,
-                    backgroundColor: backgroundColor,
+                    backgroundColor: Colors.white,
                     actions: [
                       IconButton(
                         icon: const Icon(Icons.code_outlined),
                         tooltip: 'Source Code',
-                        color: Colors.red,
                         onPressed: () {
                           ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
@@ -125,8 +129,7 @@ class _HomePageState extends State<HomePage> {
                                   ],
                                   content: SizedBox(
                                       width: MediaQuery.of(context).size.width,
-                                      child: linearGaugeUseCases[selectedIndex]
-                                          ["widget"]),
+                                      child: menuItems[selectedIndex].widget),
                                 ),
                               ),
                             );
@@ -149,7 +152,6 @@ class _HomePageState extends State<HomePage> {
                               context: context,
                               builder: (BuildContext context) => Container(
                                 child: AlertDialog(
-                                  // backgroundColor: Colors.blue,
                                   title: Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
@@ -172,24 +174,28 @@ class _HomePageState extends State<HomePage> {
                                     ],
                                   ),
                                   // backgroundColor: Colors,
-                                  actions: [
-                                    TextButton(
-                                        onPressed: () {
-                                          Navigator.pop(context);
-                                        },
-                                        child: const Text('Close'))
-                                  ],
+                                  // actions: [
+                                  //   TextButton(
+                                  //       onPressed: () {
+                                  //         Navigator.pop(context);
+                                  //       },
+                                  //       child: const Text('Close'))
+                                  // ],
                                   content: ClipRRect(
                                     borderRadius: BorderRadius.circular(20),
                                     child: SingleChildScrollView(
                                       child: Container(
+                                        color: Colors.red,
                                         width:
                                             MediaQuery.of(context).size.width,
-                                        child: HighlightView(
+                                        child:
+// WidgetWithCodeView()
+
+                                            HighlightView(
                                           textStyle: TextStyle(
                                             fontFamily: 'Roboto',
                                             fontSize: 14,
-                                            color: Colors.black,
+                                            // color: Colors.black,
                                           ),
                                           sourceCode,
                                           tabSize: 2,
@@ -240,7 +246,7 @@ class _HomePageState extends State<HomePage> {
                           ),
                         )
                       : null,
-                  body: linearGaugeUseCases[selectedIndex]["widget"],
+                  body: menuItems[selectedIndex].widget,
                 ),
               ),
             )
@@ -279,12 +285,10 @@ class ShowCaseHeader extends StatelessWidget {
     return const ListTile(
       leading: Icon(
         Icons.linear_scale_outlined,
-        // color: Colors.red,
       ),
       minLeadingWidth: 10,
       title: Text(
         'Linear Gauge',
-        // style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
       ),
     );
   }
@@ -299,22 +303,28 @@ class MainHeader extends StatelessWidget with PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
+      elevation: 0.5,
+
       centerTitle: false,
       title: const Text(
-        "Flutter Gauges",
-        style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+        " Flutter Gauges",
+        style: TextStyle(color: Colors.black, fontWeight: FontWeight.w600),
       ),
-      backgroundColor: backgroundColor,
-      elevation: 0,
+      // backgroundColor: Color(0xfff5f8fa),
+      backgroundColor: Colors.white,
       actions: [
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: ElevatedButton.icon(
               style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.black, foregroundColor: Colors.white),
+                backgroundColor: Colors.white,
+                foregroundColor: Colors.blue,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)),
+              ),
               onPressed: () {},
-              icon: const Icon(Icons.get_app),
-              label: const Text("Download Package")),
+              icon: const FlutterLogo(),
+              label: const Text("Get Package")),
         ),
         const SizedBox(
           width: 10,
@@ -333,42 +343,13 @@ class ShowCaseList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    int useCaseCount =
-        linearGaugeUseCases.where((item) => item['type'] == 'UseCase').length;
+    List<dynamic> useCases =
+        menuItems.where((item) => item.type == 'UseCase').toList();
 
     return Column(
       children: [
-        // for  loop iterate over linearGaugeUseCases
-        for (var i = 0; i < useCaseCount; i++)
-          DrawerListTile(
-              onSelected: onSelected, index: linearGaugeUseCases[i]["index"]),
-      ],
-    );
-  }
-}
-
-class MobileDrawerList extends StatelessWidget {
-  final Function(int) onSelected;
-  const MobileDrawerList({
-    super.key,
-    required this.onSelected,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    int useCaseCount =
-        linearGaugeUseCases.where((item) => item['type'] == 'UseCase').length;
-
-    return Column(
-      children: [
-        // for  loop iterate over linearGaugeUseCases
-        for (var i = 0; i < useCaseCount; i++)
-          DrawerListTile(
-              onSelected: onSelected, index: linearGaugeUseCases[i]["index"]),
-
-        for (var i = useCaseCount; i < linearGaugeUseCases.length; i++)
-          DrawerListTile(
-              onSelected: onSelected, index: linearGaugeUseCases[i]["index"]),
+        for (var i = 0; i < useCases.length; i++)
+          DrawerListTile(onSelected: onSelected, index: i),
       ],
     );
   }
@@ -383,14 +364,33 @@ class PlayGroundList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    int useCaseCount =
-        linearGaugeUseCases.where((item) => item['type'] == 'UseCase').length;
+    List<dynamic> useCases =
+        menuItems.where((item) => item.type == 'UseCase').toList();
+    List<dynamic> playgroundList =
+        menuItems.where((item) => item.type == 'API').toList();
 
     return Column(
       children: [
-        for (var i = useCaseCount; i < linearGaugeUseCases.length; i++)
-          DrawerListTile(
-              onSelected: onSelected, index: linearGaugeUseCases[i]["index"]),
+        for (var i = 0; i < playgroundList.length; i++)
+          DrawerListTile(onSelected: onSelected, index: useCases.length + i),
+      ],
+    );
+  }
+}
+
+class MobileDrawerList extends StatelessWidget {
+  final Function(int) onSelected;
+  const MobileDrawerList({
+    super.key,
+    required this.onSelected,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        for (var i = 0; i < menuItems.length; i++)
+          DrawerListTile(onSelected: onSelected, index: menuItems[i].index),
       ],
     );
   }
@@ -408,6 +408,9 @@ class DrawerListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
+      autofocus: true,
+      selectedTileColor: Colors.white,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       dense: true,
       selected: index == selectedIndex ? true : false,
       hoverColor: Colors.red.withOpacity(0.1),
@@ -416,7 +419,7 @@ class DrawerListTile extends StatelessWidget {
         onSelected(index);
       },
       title: Text(
-        linearGaugeUseCases[index]["title"],
+        menuItems[index].title,
       ),
     );
   }

@@ -23,7 +23,7 @@ class MyServerUtilizationExample extends StatelessWidget {
           rangeLinearGauge: [
             RangeLinearGauge(color: Colors.green, start: 0, end: 25),
             RangeLinearGauge(color: Colors.orange, start: 25, end: 50),
-            RangeLinearGauge(color: Colors.pink.shade300, start: 50, end: 75),
+            RangeLinearGauge(color: Colors.amber, start: 50, end: 75),
             RangeLinearGauge(color: Colors.red, start: 75, end: 100),
           ],
           pointers: const [
