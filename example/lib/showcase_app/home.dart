@@ -173,14 +173,6 @@ class _HomePageState extends State<HomePage> {
                                           label: Text("copy"))
                                     ],
                                   ),
-                                  // backgroundColor: Colors,
-                                  // actions: [
-                                  //   TextButton(
-                                  //       onPressed: () {
-                                  //         Navigator.pop(context);
-                                  //       },
-                                  //       child: const Text('Close'))
-                                  // ],
                                   content: ClipRRect(
                                     borderRadius: BorderRadius.circular(20),
                                     child: SingleChildScrollView(
