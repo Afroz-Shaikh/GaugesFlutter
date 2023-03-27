@@ -1,15 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:geekyants_flutter_gauges/gauges.dart';
 
-void main() {
-  runApp(
-    const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: BloodSugarTest(),
-    ),
-  );
-}
-
 class BloodSugarTest extends StatelessWidget {
   const BloodSugarTest({super.key});
 

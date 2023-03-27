@@ -23,7 +23,7 @@ class HeightIndicator extends StatelessWidget {
     return Scaffold(
       body: LayoutBuilder(builder: (context, constraints) {
         double screenHeight = constraints.maxHeight - 20;
-        return Container(
+        return SizedBox(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.end,

@@ -67,7 +67,7 @@ class _PointerPlayGroundState extends State<PointerPlayGround> {
                       buildPointerWidgetHandler(),
                       buildPointerPositionHandler(),
                       buildPointerAlignmentHandler(),
-                      Divider(),
+                      const Divider(),
                       const Text('Pointer Height'),
                       buildPointerHeightHandler(),
                       const Text('Pointer Width'),

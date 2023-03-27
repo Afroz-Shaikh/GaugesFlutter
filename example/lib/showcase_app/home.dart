@@ -1,13 +1,14 @@
 import 'package:example/showcase_app/data.dart';
+import 'package:example/showcase_app/utils/colors.dart';
+import 'package:example/showcase_app/widgets/codeview.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_highlight/flutter_highlight.dart';
-// import 'package:flutter_highlight/themes/xcode.dart';
 import 'package:flutter_highlight/themes/atom-one-dark.dart';
 
 int selectedIndex = 0;
 
-//ignore: must_be_immutable
+// ignore: must_be_immutable
 class HomePage extends StatefulWidget {
   int selectedItem = 0;
   HomePage({super.key, required this.selectedItem});
@@ -17,72 +18,67 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  // Boolean for Drawer items State
   bool showCaseIsOpen = true;
   bool playgroundIsOpen = true;
+  bool showCode = false;
+
   @override
   Widget build(BuildContext context) {
     bool displayMobileLayout = MediaQuery.of(context).size.width < 600;
     return Scaffold(
         appBar: const MainHeader(),
-        backgroundColor: Colors.white,
+        backgroundColor: clearWhite,
         body: Row(
           children: [
+            // Web Display Mode
             if (!displayMobileLayout)
-              Container(
-                margin: const EdgeInsets.all(8),
-                child: Drawer(
-                  elevation: 0,
-                  width: 250,
-                  // backgroundColor: Color(0xfff5f8fa),
-                  backgroundColor: Colors.white,
-                  child: ListView(
-                    children: [
-                      ExpansionPanelList(
-                        expandedHeaderPadding: EdgeInsets.all(0),
-                        expansionCallback: (int index, bool isExpanded) {
-                          setState(() {
-                            showCaseIsOpen = !showCaseIsOpen;
-                          });
-                        },
-                        children: [
-                          ExpansionPanel(
-                            backgroundColor: Color(0xfff5f8fa),
-                            canTapOnHeader: true,
-                            headerBuilder:
-                                (BuildContext context, bool isExpanded) =>
-                                    const ShowCaseHeader(),
-                            body: showCaseListView(),
-                            isExpanded: showCaseIsOpen,
-                          ),
-                        ],
-                      ),
-                      ExpansionPanelList(
-                        expandedHeaderPadding: const EdgeInsets.all(0),
-                        expansionCallback: (panelIndex, isExpanded) {
-                          setState(() {
-                            playgroundIsOpen = !playgroundIsOpen;
-                          });
-                        },
-                        children: [
-                          ExpansionPanel(
-                              backgroundColor: const Color(0xfff5f8fa),
-                              headerBuilder:
-                                  (BuildContext context, isExpanded) =>
-                                      const ListTile(
-                                        minLeadingWidth: 10,
-                                        title: Text("PlayGround"),
-                                      ),
-                              body: showCasePlaygroundView(),
-                              isExpanded: playgroundIsOpen)
-                        ],
-                      )
-                    ],
-                  ),
+              MenuDrawer(
+                content: ListView(
+                  children: [
+                    ExpansionPanelList(
+                      expandedHeaderPadding: const EdgeInsets.all(0),
+                      expansionCallback: (int index, bool isExpanded) {
+                        setState(() {
+                          showCaseIsOpen = !showCaseIsOpen;
+                        });
+                      },
+                      children: [
+                        ExpansionPanel(
+                          backgroundColor: secondaryBackgroundColor,
+                          canTapOnHeader: true,
+                          headerBuilder:
+                              (BuildContext context, bool isExpanded) =>
+                                  const DrawerHeader(),
+                          body: showCaseListView(),
+                          isExpanded: showCaseIsOpen,
+                        ),
+                      ],
+                    ),
+                    ExpansionPanelList(
+                      expandedHeaderPadding: const EdgeInsets.all(0),
+                      expansionCallback: (panelIndex, isExpanded) {
+                        setState(() {
+                          playgroundIsOpen = !playgroundIsOpen;
+                        });
+                      },
+                      children: [
+                        ExpansionPanel(
+                            backgroundColor: secondaryBackgroundColor,
+                            headerBuilder: (BuildContext context, isExpanded) =>
+                                const ListTile(
+                                  minLeadingWidth: 10,
+                                  title: Text("PlayGround"),
+                                ),
+                            body: showCasePlaygroundView(),
+                            isExpanded: playgroundIsOpen)
+                      ],
+                    )
+                  ],
                 ),
               ),
-            SizedBox(
-              width: displayMobileLayout ? null : 2,
-            ),
+
+            // Main Content
             Expanded(
               child: Container(
                 decoration: BoxDecoration(
@@ -91,120 +87,14 @@ class _HomePageState extends State<HomePage> {
                 ),
                 margin: displayMobileLayout ? null : const EdgeInsets.all(10),
                 child: Scaffold(
-                  appBar: AppBar(
-                    iconTheme:
-                        const IconThemeData().copyWith(color: Colors.black),
-                    elevation: 0,
-                    centerTitle: false,
-                    title: Text(
-                      menuItems[selectedIndex].title,
-                      style: const TextStyle(color: Colors.black, fontSize: 14),
-                    ),
-                    automaticallyImplyLeading:
-                        displayMobileLayout ? true : false,
-                    backgroundColor: Colors.white,
-                    actions: [
-                      IconButton(
-                        icon: const Icon(Icons.code_outlined),
-                        tooltip: 'Source Code',
-                        onPressed: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text('This is a snackbar')));
-                        },
-                      ),
-                      IconButton(
-                          onPressed: () {
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) => Container(
-                                child: AlertDialog(
-                                  backgroundColor: Colors.white,
-                                  actions: [
-                                    TextButton(
-                                        onPressed: () {
-                                          Navigator.pop(context);
-                                        },
-                                        child: const Text('Close'))
-                                  ],
-                                  content: SizedBox(
-                                      width: MediaQuery.of(context).size.width,
-                                      child: menuItems[selectedIndex].widget),
-                                ),
-                              ),
-                            );
-
-                            // Navigator.push(
-                            //     context,
-                            //     MaterialPageRoute(
-                            //         builder: (context) =>
-                            //             linearGaugeUseCases[selectedIndex]
-                            //                 ["widget"]));
-                          },
-                          icon: const Icon(Icons.fullscreen_exit_rounded)),
-                      IconButton(
-                          onPressed: () async {
-                            String sourceCode = await rootBundle
-                                .loadString('assets/random_code.dart');
-
-                            // ignore: use_build_context_synchronously
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) => Container(
-                                child: AlertDialog(
-                                  title: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      const Text('Source Code'),
-                                      ElevatedButton.icon(
-                                          onPressed: () {
-                                            Clipboard.setData(ClipboardData(
-                                                text: sourceCode));
-                                            ScaffoldMessenger.of(context)
-                                                .showSnackBar(
-                                              const SnackBar(
-                                                content: Text(
-                                                    'Code copied to clipboard'),
-                                              ),
-                                            );
-                                          },
-                                          icon: Icon(Icons.copy_rounded),
-                                          label: Text("copy"))
-                                    ],
-                                  ),
-                                  content: ClipRRect(
-                                    borderRadius: BorderRadius.circular(20),
-                                    child: SingleChildScrollView(
-                                      child: Container(
-                                        color: Colors.red,
-                                        width:
-                                            MediaQuery.of(context).size.width,
-                                        child:
-// WidgetWithCodeView()
-
-                                            HighlightView(
-                                          textStyle: TextStyle(
-                                            fontFamily: 'Roboto',
-                                            fontSize: 14,
-                                            // color: Colors.black,
-                                          ),
-                                          sourceCode,
-                                          tabSize: 2,
-                                          language: 'dart',
-                                          theme: atomOneDarkTheme,
-                                          // theme: gaugesTheme,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
-                          icon: const Icon(Icons.source_outlined))
-                    ],
-                  ),
+                  appBar: MainContentAppBar(
+                      showCodeView: () {
+                        setState(() {
+                          showCode = !showCode;
+                        });
+                      },
+                      codeMode: showCode,
+                      displayMobileLayout: displayMobileLayout),
                   drawer: displayMobileLayout
                       ? Drawer(
                           child: ListView(
@@ -215,14 +105,9 @@ class _HomePageState extends State<HomePage> {
                                     headerBuilder: (BuildContext context,
                                             bool isExpanded) =>
                                         const ListTile(
-                                      leading: Icon(
-                                        Icons.linear_scale_outlined,
-                                        color: Colors.red,
-                                      ),
-                                      title: Text(
-                                        'Linear Gauge',
-                                      ),
-                                    ),
+                                            leading: Icon(
+                                                Icons.linear_scale_outlined),
+                                            title: Text('Linear Gauge')),
                                     body: MobileDrawerList(
                                       onSelected: (i) {
                                         setState(() {
@@ -238,7 +123,12 @@ class _HomePageState extends State<HomePage> {
                           ),
                         )
                       : null,
-                  body: menuItems[selectedIndex].widget,
+                  body: showCode
+                      ? CodeView(
+                          codePath: menuItems[selectedIndex].sourceCodePath,
+                          index: selectedIndex,
+                        )
+                      : menuItems[selectedIndex].widget,
                 ),
               ),
             )
@@ -267,8 +157,124 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-class ShowCaseHeader extends StatelessWidget {
-  const ShowCaseHeader({
+class MainContentAppBar extends StatelessWidget with PreferredSizeWidget {
+  const MainContentAppBar({
+    super.key,
+    required this.displayMobileLayout,
+    required this.showCodeView,
+    required this.codeMode,
+  });
+  final bool displayMobileLayout;
+  final VoidCallback showCodeView;
+  final bool codeMode;
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      iconTheme: const IconThemeData().copyWith(color: Colors.black),
+      elevation: 0,
+      centerTitle: false,
+      title: Text(
+        menuItems[selectedIndex].title,
+        style: const TextStyle(color: Colors.black, fontSize: 14),
+      ),
+      automaticallyImplyLeading: displayMobileLayout ? true : false,
+      backgroundColor: Colors.white,
+      actions: [
+        IconButton(
+          icon: codeMode
+              ? const Icon(Icons.display_settings)
+              : const Icon(Icons.code_rounded),
+          tooltip: 'Source Code',
+          onPressed: menuItems[selectedIndex].sourceCodePath != null
+              ? showCodeView
+              : null,
+        ),
+        IconButton(
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) => SizedBox(
+                  child: AlertDialog(
+                    backgroundColor: Colors.white,
+                    actions: [
+                      TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: const Text('Close'))
+                    ],
+                    content: SizedBox(
+                        width: MediaQuery.of(context).size.width,
+                        child: menuItems[selectedIndex].widget),
+                  ),
+                ),
+              );
+            },
+            icon: const Icon(Icons.fullscreen_exit_rounded)),
+        IconButton(
+            onPressed: () async {
+              String sourceCode =
+                  await rootBundle.loadString('assets/random_code.dart');
+
+              // ignore: use_build_context_synchronously
+              showDialog(
+                context: context,
+                builder: (BuildContext context) => Container(
+                  child: AlertDialog(
+                    title: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text('Source Code'),
+                        ElevatedButton.icon(
+                            onPressed: () {
+                              Clipboard.setData(
+                                  ClipboardData(text: sourceCode));
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Code copied to clipboard'),
+                                ),
+                              );
+                            },
+                            icon: const Icon(Icons.copy_rounded),
+                            label: const Text("copy"))
+                      ],
+                    ),
+                    content: ClipRRect(
+                      borderRadius: BorderRadius.circular(20),
+                      child: SingleChildScrollView(
+                        child: Container(
+                          color: Colors.red,
+                          width: MediaQuery.of(context).size.width,
+                          child: HighlightView(
+                            textStyle: const TextStyle(
+                              fontFamily: 'Roboto',
+                              fontSize: 14,
+                            ),
+                            sourceCode,
+                            tabSize: 2,
+                            language: 'dart',
+                            theme: atomOneDarkTheme,
+                            // theme: gaugesTheme,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            },
+            icon: const Icon(Icons.source_outlined))
+      ],
+    );
+  }
+}
+
+class DrawerHeader extends StatelessWidget {
+  const DrawerHeader({
     super.key,
   });
 
@@ -296,14 +302,12 @@ class MainHeader extends StatelessWidget with PreferredSizeWidget {
   Widget build(BuildContext context) {
     return AppBar(
       elevation: 0.5,
-
       centerTitle: false,
       title: const Text(
         " Flutter Gauges",
         style: TextStyle(color: Colors.black, fontWeight: FontWeight.w600),
       ),
-      // backgroundColor: Color(0xfff5f8fa),
-      backgroundColor: Colors.white,
+      backgroundColor: clearWhite,
       actions: [
         Padding(
           padding: const EdgeInsets.all(8.0),
@@ -419,16 +423,34 @@ class DrawerListTile extends StatelessWidget {
 
 Color getBackgroundColor(int index) {
   if (selectedIndex == index) {
-    return Colors.red;
+    return primaryColor;
   } else {
-    return Colors.white;
+    return clearWhite;
   }
 }
 
 Color getTextColor(int index) {
   if (selectedIndex == index) {
-    return Colors.white;
+    return clearWhite;
   } else {
-    return Colors.black;
+    return clearBlack;
+  }
+}
+
+class MenuDrawer extends StatelessWidget {
+  final Widget content;
+  const MenuDrawer({super.key, required this.content});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.all(8),
+      child: Drawer(
+        elevation: 0,
+        width: 250,
+        backgroundColor: clearWhite,
+        child: content,
+      ),
+    );
   }
 }

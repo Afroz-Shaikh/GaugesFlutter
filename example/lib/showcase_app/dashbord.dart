@@ -9,7 +9,7 @@ class DashBoard extends StatelessWidget {
       backgroundColor: Colors.white,
       appBar: AppBar(
         centerTitle: false,
-        title: Text('Linear Gauge Showcase'),
+        title: const Text('Linear Gauge Showcase'),
         elevation: 3,
         backgroundColor: Colors.white,
         actions: [],

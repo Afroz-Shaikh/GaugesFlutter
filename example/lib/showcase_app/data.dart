@@ -14,18 +14,13 @@ import 'package:example/usecase/server_utilization.dart';
 
 import 'package:example/usecase/temperature_meter.dart';
 import 'package:example/usecase/timeline_controller.dart';
-import 'package:flutter/material.dart';
 
 import '../../useCase/height_indicator.dart';
 import '../../useCase/progress_bar.dart';
 import '../../usecase/vaccination_graph.dart';
 import '../../usecase/water_level.dart';
 import '../useCase/separator.dart';
-import 'playgrounds/valueBar_playground.dart';
-
-// Color backgroundColor = const Color(0xffeef2f7);
-// Color backgroundColor = const Color(0xffECEDF0);
-Color backgroundColor = Colors.white;
+import 'playgrounds/valuebar_playground.dart';
 
 List<LinearGaugeUseCase> menuItems = [
   LinearGaugeUseCase(
@@ -33,12 +28,14 @@ List<LinearGaugeUseCase> menuItems = [
     widget: const Speedometer(),
     index: 0,
     type: "UseCase",
+    sourceCodePath: "lib/useCase/speedometer.dart",
   ),
   LinearGaugeUseCase(
     title: "Height Indicator",
     widget: const HeightIndicator(),
     index: 1,
     type: "UseCase",
+    sourceCodePath: "lib/useCase/height_indicator.dart",
   ),
   LinearGaugeUseCase(
     title: "Progress Bar",
@@ -65,12 +62,6 @@ List<LinearGaugeUseCase> menuItems = [
     type: "UseCase",
   ),
   LinearGaugeUseCase(
-    title: "Temperature Gauge",
-    widget: const TemperatureMeter(),
-    index: 6,
-    type: "UseCase",
-  ),
-  LinearGaugeUseCase(
     title: "Blood Sugar Level",
     widget: const BloodSugarTest(),
     index: 7,
@@ -86,6 +77,12 @@ List<LinearGaugeUseCase> menuItems = [
     title: "Weekly Overview",
     widget: const WeeklyOverview(),
     index: 9,
+    type: "UseCase",
+  ),
+  LinearGaugeUseCase(
+    title: "Temperature Gauge",
+    widget: const TemperatureMeter(),
+    index: 6,
     type: "UseCase",
   ),
   LinearGaugeUseCase(

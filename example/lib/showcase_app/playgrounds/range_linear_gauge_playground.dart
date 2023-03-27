@@ -1,9 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:geekyants_flutter_gauges/gauges.dart';
-
-import '../data.dart';
 import '../widgets/playground_header.dart';
 
 class RangeLinearGaugePlayGround extends StatefulWidget {

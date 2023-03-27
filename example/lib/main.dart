@@ -6,6 +6,7 @@ import 'package:example/range_vertical.dart';
 import 'package:example/shaders.dart';
 import 'package:example/showcase_app/dashbord.dart';
 import 'package:example/showcase_app/data.dart';
+import 'package:example/showcase_app/utils/colors.dart';
 import 'package:example/tickness_extend_example.dart';
 import './showcase_app/home.dart';
 import 'package:example/valuebar_position.dart';
@@ -15,10 +16,10 @@ void main() {
   runApp(
     MaterialApp(
       theme: ThemeData.light(
-        useMaterial3: false,
+        useMaterial3: true,
       ).copyWith(
-        colorScheme: ColorScheme.light(
-          background: backgroundColor,
+        colorScheme: const ColorScheme.light(
+          background: clearWhite,
           primary: Colors.blueAccent,
           secondary: Colors.red,
         ),
