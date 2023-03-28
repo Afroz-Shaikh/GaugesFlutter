@@ -90,7 +90,6 @@ class _MyGaugeExampleState extends State<MyGaugeExample> {
 
   The `RangeLinearGauge` class enables you to customize the ruler appearance in the `LinearGauge`. You can display multiple ranges by providing a list of `RangeLinearGauge` values, and customize the color, start, and end values to match your requirements.
 
----
 
 ## Demo Application
 
