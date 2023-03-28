@@ -11,7 +11,7 @@ and the Flutter guide for
 [developing packages and plugins](https://flutter.dev/developing-packages).
 -->
 
-<img src="https://github.com/Afroz-Shaikh/GaugesFlutter/blob/readme.md/example/screens/banner.png" alt="accessibility text"> <img src="https://github.com/Afroz-Shaikh/GaugesFlutter/blob/readme.md/example/screens/banner.png" width="250" alt="accessibility text">
+<img src="https://github.com/Afroz-Shaikh/GaugesFlutter/blob/readme.md/example/screens/banner.png" alt="accessibility text"> 
 
 # Gauges
 
