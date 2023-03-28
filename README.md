@@ -22,7 +22,7 @@ A gauge, in science and engineering, is a device used to make measurements or in
 - [Getting Started](#getting-started)
 - [Linear Gauge Featues](#customization)
   - [Orientation](#gauge-orientation)
-  - [Ruler Style](#rulerstyle)
+  - [Ruler Style](#rulerStyle)
   - [Pointer](#pointer)
   - [Value Bar](#valuebar)
   - [Range Linear Gauge](#rangelineargauge)
