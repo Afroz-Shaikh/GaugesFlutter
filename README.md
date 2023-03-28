@@ -78,21 +78,19 @@ class _MyGaugeExampleState extends State<MyGaugeExample> {
   - `GaugeOrientaion.vertical`: The gauge will be oriented vertically, with the minimum value at the bottom and the maximum value at the top.
 <img src="https://github.com/Afroz-Shaikh/GaugesFlutter/blob/readme.md/example/screens/orientation.gif" alt="accessibility text"> 
 
-- **RulerStyle:** The **RulerStyle** class allows you to customize the appearance of the ruler used in the **LinearGauge**. With properties such as `RulerPosition`, `showLabel`, `inverseRuler`, and many more, you can customize the ruler in various ways to suit your needs.
+- **RulerStyle** :
+ The **RulerStyle** class allows you to customize the appearance of the ruler used in the **LinearGauge**. With properties such as `RulerPosition`, `showLabel`, `inverseRuler`, and many more, you can customize the ruler in various ways to suit your needs.
 <img src="https://github.com/Afroz-Shaikh/GaugesFlutter/blob/readme.md/example/screens/rulerposition.png" alt="accessibility text"> 
 
-- **Pointer**
-
+- **Pointer**:
   The Pointer is used to indicate a specific value on the gauge. The gauge can have multiple pointers with various shapes and values
 <img src="https://github.com/Afroz-Shaikh/GaugesFlutter/blob/readme.md/example/screens/pointershape.png" alt="accessibility text"> 
 
 - **ValueBar**
-
   The `ValueBar` in the LinearGauge is the component that displays the actual value of the gauge. It has properties such as `color`, `offset`, and `thickness` that can be customized to fit your needs.
   <img src="https://github.com/Afroz-Shaikh/GaugesFlutter/blob/readme.md/example/screens/valuebar.png" alt="accessibility text"> 
 
 - **RangeLinearGauge**
-
   The `RangeLinearGauge` class enables you to customize the ruler appearance in the `LinearGauge`. You can display multiple ranges by providing a list of `RangeLinearGauge` values, and customize the color, start, and end values to match your requirements.
 <img src="https://github.com/Afroz-Shaikh/GaugesFlutter/blob/readme.md/example/screens/rangelineargauge.png" alt="accessibility text"> 
 
