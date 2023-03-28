@@ -19,9 +19,9 @@ A gauge, in science and engineering, is a device used to make measurements or in
 
 ## Table of contents
 
-- [Getting Started](https://pub.dev/packages/geekyants_flutter_gauges)
-- [Linear Gauge Featues](https://pub.dev/packages/geekyants_flutter_gauges)
-- [Demo Application](https://pub.dev/packages/geekyants_flutter_gauges)
+- [Getting Started](#getting-started)
+- [Linear Gauge Featues](#customization)
+- [Demo Application](#demo-applicatopn)
 - [Useful Links](https://pub.dev/packages/geekyants_flutter_gauges)
 - [About GeekyAnts](https://pub.dev/packages/geekyants_flutter_gauges)
 
@@ -88,14 +88,20 @@ class _MyGaugeExampleState extends State<MyGaugeExample> {
 
 - **ValueBar**
   The `ValueBar` in the LinearGauge is the component that displays the actual value of the gauge. It has properties such as `color`, `offset`, and `thickness` that can be customized to fit your needs.
-  <img src="https://github.com/Afroz-Shaikh/GaugesFlutter/blob/readme.md/example/screens/valuebar.png" alt="accessibility text"> 
+<img src="https://github.com/Afroz-Shaikh/GaugesFlutter/blob/readme.md/example/screens/valuebar.png" alt="accessibility text"> 
 
 - **RangeLinearGauge**
   The `RangeLinearGauge` class enables you to customize the ruler appearance in the `LinearGauge`. You can display multiple ranges by providing a list of `RangeLinearGauge` values, and customize the color, start, and end values to match your requirements.
 <img src="https://github.com/Afroz-Shaikh/GaugesFlutter/blob/readme.md/example/screens/rangelineargauge.png" alt="accessibility text"> 
 
 ## Demo Application
-
-You can fully explore the capabilities of our Flutter widgets on your device by installing our sample browser applications from the app stores listed below. Additionally, you can view sample code on our GitHub repository.
-
+To fully explore the capabilities of our Linear Gauge, we recommend checking out our Demo Application which consists of Use Cases and Playgrounds for Linear Gauge
 [DEMO APPLICATION](https://gauges-showcase.vercel.app/#/)
+
+## Credits
+
+This package was created by [@GeekyAnts](https://github.com/GeekyAnts).
+
+## License
+
+This package is available under the MIT license.
