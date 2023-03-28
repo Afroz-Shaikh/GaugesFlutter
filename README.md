@@ -31,32 +31,27 @@ Run this command
 
 ```
 $flutter pub add geekyants_flutter_gauges
-
-
 ```
 
 This will add a line like this to your package's pubspec.yaml (and run an implicit flutter pub get):
 
-```
+```dart
 dependencies:
   geekyants_flutter_gauges: ^0.0.5
-
-
 ```
 
 ## Usage
 
 Import it inside your main.dart
 
-```
+```dart
 import 'package:geekyants_flutter_gauges/gauges.dart';
-
 
 ```
 
 Use it as below
 
-```
+```dart
 class _MyGaugeExampleState extends State<MyGaugeExample> {
   @override
   Widget build(BuildContext context) {
@@ -71,8 +66,6 @@ class _MyGaugeExampleState extends State<MyGaugeExample> {
     );
   }
 }
-
-
 ```
 
 ## Customization
