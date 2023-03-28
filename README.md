@@ -74,7 +74,7 @@ class _MyGaugeExampleState extends State<MyGaugeExample> {
 
 ## Customization
 
-### **Gauge Orientation** :
+### **Gauge Orientation**:
 
   The linearGauge can be oriented vertically or horizontally. The orientation can be set using the **`Gaugeorientation`** property in the Linear Gauge. The possible values for the orientation property are:
 
@@ -82,7 +82,7 @@ class _MyGaugeExampleState extends State<MyGaugeExample> {
   - `GaugeOrientaion.vertical`: The gauge will be oriented vertically, with the minimum value at the bottom and the maximum value at the top.
 <img src="https://github.com/Afroz-Shaikh/GaugesFlutter/blob/readme.md/example/screens/orientation.gif" alt="accessibility text"> 
 
-### **RulerStyle** :
+### **RulerStyle**:
  The **RulerStyle** class allows you to customize the appearance of the ruler used in the **LinearGauge**. With properties such as `RulerPosition`, `showLabel`, `inverseRuler`, and many more, you can customize the ruler in various ways to suit your needs.
 <img src="https://github.com/Afroz-Shaikh/GaugesFlutter/blob/readme.md/example/screens/rulerposition.png" alt="accessibility text"> 
 
