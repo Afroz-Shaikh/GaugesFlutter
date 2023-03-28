@@ -18,51 +18,30 @@ class _MyShadersState extends State<MyShaders> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            // height: MediaQuery.of(context).size.height,
-            color: Colors.pink.shade100,
+        backgroundColor: Colors.white,
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
             child: LinearGauge(
-              gaugeOrientation: GaugeOrientation.horizontal,
-              enableAnimation: true,
-              valueBar: [
-                ValueBar(
-                  value: 20,
-                  position: ValueBarPosition.top,
-                  offset: 30.0,
-                )
-              ],
-              pointers: const [
-                Pointer(
-                  value: 10,
-                  shape: PointerShape.circle,
-                  pointerPosition: PointerPosition.center,
-                ),
-                Pointer(
-                  value: 10,
-                  shape: PointerShape.triangle,
-                  pointerPosition: PointerPosition.bottom,
-                ),
-              ],
-              start: 0,
-              end: 100,
-              linearGaugeBoxDecoration: const LinearGaugeBoxDecoration(
-                thickness: 4,
-                // backgroundColor: Colors.green.shade100,
-              ),
-              rulers: const RulerStyle(
-                  rulerPosition: RulerPosition.bottom,
-                  primaryRulersHeight: 20,
-                  rulersOffset: 20,
-                  labelOffset: 30),
-            ),
+                gaugeOrientation: GaugeOrientation.vertical,
+                valueBar: [
+                  ValueBar(value: 5, color: Colors.red, valueBarThickness: 5)
+                ],
+                showLinearGaugeContainer: true,
+                linearGaugeBoxDecoration:
+                    LinearGaugeBoxDecoration(thickness: 5),
+                start: 0,
+                steps: 1,
+                end: 10,
+                rulers: const RulerStyle(
+                  textStyle: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20),
+                  rulerPosition: RulerPosition.right,
+                  labelOffset: 10,
+                )),
           ),
-        ],
-      ),
-    );
+        ));
   }
 }
