@@ -21,9 +21,13 @@ A gauge, in science and engineering, is a device used to make measurements or in
 
 - [Getting Started](#getting-started)
 - [Linear Gauge Featues](#customization)
+  - [Orientation](#gauge-orientation)
+  - [Ruler Style](#rulerstyle)
+  - [Pointer](#pointer)
+  - [Value Bar](#valuebar)
+  - [Range Linear Gauge](#rangelineargauge)
 - [Demo Application](#demo-applicatopn)
-- [Useful Links](https://pub.dev/packages/geekyants_flutter_gauges)
-- [About GeekyAnts](https://pub.dev/packages/geekyants_flutter_gauges)
+- [Credits](#credits)
 
 ## Getting started
 
