@@ -27,7 +27,7 @@ import 'package:geekyants_flutter_gauges/src/linear_gauge/linear_gauge_painter.d
 ///
 ///
 class Pointer {
-  const Pointer({
+  Pointer({
     Key? key,
     required this.value,
     this.height = 10.0,
@@ -42,8 +42,10 @@ class Pointer {
     this.animationDuration = 1000,
     this.animationType = Curves.ease,
     this.enableAnimation = true,
+    this.enableInteractivity = false,
   });
 
+  ///
   ///
   /// `value` Sets the value of the pointer on the [LinearGauge]
   /// default is to set to the value of the [LinearGauge]
@@ -54,7 +56,7 @@ class Pointer {
   /// ),
   /// ),
   /// ```
-  final double? value;
+  double? value;
 
   ///
   /// `height` Sets the height of the pointer on the [LinearGauge]
@@ -91,7 +93,7 @@ class Pointer {
   /// ```
   /// default is to [Colors.blue]
   ///
-  final Color? color;
+  Color? color;
 
   ///
   /// `shape` Sets the shape of the pointer on the [LinearGauge]
@@ -230,16 +232,16 @@ class Pointer {
   ///
   final Curve animationType;
 
+  ///
+  /// Specifies if the Pointer Interactivity is enabled or not.
+  ///
+  final bool enableInteractivity;
+
+  double valueInpxl = 0;
+
   /// Method to draw the pointer on the canvas based on the pointer shape
-  void drawPointer(
-    PointerShape? shape,
-    Canvas canvas,
-    double start,
-    double end,
-    Offset offset,
-    int index,
-    RenderLinearGauge linearGauge,
-  ) {
+  void drawPointer(PointerShape? shape, Canvas canvas, double start, double end,
+      Offset offset, int index, RenderLinearGauge linearGauge) {
     if (linearGauge.getGaugeOrientation == GaugeOrientation.horizontal) {
       if (pointerPosition != PointerPosition.bottom &&
           pointerPosition != PointerPosition.center &&
@@ -275,7 +277,7 @@ class Pointer {
 
     Offset hOffset =
         Offset(valueInPX + start + linearGauge.getExtendLinearGauge, offset.dy);
-
+    valueInpxl = hOffset.dx;
     Offset vOffset = isInversedRulers
         ? Offset(
             offset.dx,
@@ -310,7 +312,8 @@ class Pointer {
     }
   }
 
-  // Method to draw the Text for  Pointers
+  /// Method to draw the Text for  Pointers
+  /// This is can also be used to draw the text for the marker
   void _drawLabel(Canvas canvas, Offset offset, QuarterTurns quarterTurns,
       RulerPosition rulerPosition, RenderLinearGauge linearGauge, int index) {
     double gaugeThickness = linearGauge.getThickness;
@@ -322,8 +325,9 @@ class Pointer {
     );
 
     textPainter.text = TextSpan(
-        text:
-            value == null ? linearGauge.getValue.toString() : value.toString(),
+        text: value == null
+            ? linearGauge.getValue.toStringAsFixed(0)
+            : value!.toStringAsFixed(0),
         style: labelStyle ?? TextStyle(color: color, fontSize: 12.0));
 
     textPainter.layout();
@@ -997,6 +1001,77 @@ class Pointer {
         return 270;
       default:
         return 0;
+    }
+  }
+
+  void startInteractivity(
+    Offset localPosition,
+    RenderLinearGauge linearGauge,
+  ) {
+    color = Colors.green;
+    print("Started In");
+  }
+
+  void updateInteractivity(
+    Offset localPosition,
+    RenderLinearGauge linearGauge,
+  ) {
+    var w = linearGauge.gaugeEnd +
+        linearGauge.gaugeStart -
+        2 * linearGauge.getExtendLinearGauge;
+    localPosition = Offset(localPosition.dx, localPosition.dy);
+    var dx = localPosition.dx.clamp(
+        0 + width! + linearGauge.getExtendLinearGauge,
+        w + linearGauge.getExtendLinearGauge);
+
+    var dy = localPosition.dy.clamp(
+        0 + width! + linearGauge.getExtendLinearGauge,
+        w + linearGauge.getExtendLinearGauge);
+    var range = linearGauge.getEnd - linearGauge.getStart;
+
+    if (enableInteractivity) {
+      if (linearGauge.getGaugeOrientation == GaugeOrientation.horizontal) {
+        double adjustedValue =
+            dx - (width!) - (linearGauge.getExtendLinearGauge);
+
+        double percentValue = ((adjustedValue) /
+                (linearGauge.gaugeEnd -
+                    (width!) +
+                    (linearGauge.gaugeStart -
+                        (2 * linearGauge.getExtendLinearGauge))) *
+                (linearGauge.getEnd - linearGauge.getStart))
+            .toDouble();
+
+        int percent = percentValue.round();
+
+        var num = (percent / range) * range + linearGauge.getStart;
+        if (linearGauge.getInversedRulers) {
+          num = range - (percent / range) * range + linearGauge.getStart;
+        }
+        value = num;
+
+        color = Colors.red;
+      } else {
+        print(dy);
+        double adjustedValue =
+            dy - (width!) - (linearGauge.getExtendLinearGauge);
+        double percentValue = range -
+            ((adjustedValue) /
+                    (linearGauge.gaugeEnd -
+                        (width!) +
+                        (linearGauge.gaugeStart -
+                            (2 * linearGauge.getExtendLinearGauge))) *
+                    (linearGauge.getEnd - linearGauge.getStart))
+                .toDouble();
+
+        int percent = !linearGauge.getInversedRulers
+            ? percentValue.round()
+            : 100 - percentValue.round();
+
+        var num = (percent / range) * range + linearGauge.getStart;
+
+        value = num;
+      }
     }
   }
 }

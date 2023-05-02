@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:geekyants_flutter_gauges/geekyants_flutter_gauges.dart';
 import 'linear_gauge_painter.dart';
@@ -564,11 +565,11 @@ class _LinearGauge extends State<LinearGauge> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return _RLinearGauge(
-      lGauge: widget,
-      gaugeAnimation: _gaugeAnimation,
-      pointerAnimation: _pointerAnimations,
-      valueBarAnimation: _valueBarAnimations,
-    );
+        lGauge: widget,
+        gaugeAnimation: _gaugeAnimation,
+        pointerAnimation: _pointerAnimations,
+        valueBarAnimation: _valueBarAnimations,
+        gestureSettings: MediaQuery.maybeOf(context)!.gestureSettings);
   }
 
   void _disposeAnimationControllers() {
@@ -603,9 +604,11 @@ class _RLinearGauge extends LeafRenderObjectWidget {
   final Animation<double>? gaugeAnimation;
   final List<Animation<double>>? pointerAnimation;
   final List<Animation<double>>? valueBarAnimation;
+  final DeviceGestureSettings? gestureSettings;
 
   const _RLinearGauge(
       {required this.lGauge,
+      required this.gestureSettings,
       this.gaugeAnimation,
       this.pointerAnimation,
       this.valueBarAnimation});
@@ -650,6 +653,7 @@ class _RLinearGauge extends LeafRenderObjectWidget {
       extendLinearGauge: lGauge.extendLinearGauge!,
       fillExtend: lGauge.fillExtend,
       pointerAnimation: pointerAnimation!,
+      getGestureSettings: MediaQuery.maybeOf(context)?.gestureSettings,
       valueBarAnimation: valueBarAnimation!,
     );
   }
@@ -695,6 +699,7 @@ class _RLinearGauge extends LeafRenderObjectWidget {
       ..setLinearGaugeBoxDecoration = lGauge.linearGaugeBoxDecoration
       ..setFillExtend = lGauge.fillExtend
       ..setPointerAnimation = pointerAnimation!
+      ..setGestureSettings = gestureSettings
       ..setValueBarAnimation = valueBarAnimation!;
   }
 }

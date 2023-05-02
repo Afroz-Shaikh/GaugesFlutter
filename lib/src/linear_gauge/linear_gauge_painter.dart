@@ -1,6 +1,6 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-// ignore: implementation_imports
-import 'package:flutter/src/rendering/object.dart';
+import 'package:flutter/rendering.dart';
 import 'package:geekyants_flutter_gauges/geekyants_flutter_gauges.dart';
 import 'dart:ui' as ui;
 import 'dart:math' as math;
@@ -44,6 +44,7 @@ class RenderLinearGauge extends RenderBox {
     required bool fillExtend,
     required List<Animation<double>> pointerAnimation,
     required List<Animation<double>> valueBarAnimation,
+    required DeviceGestureSettings? getGestureSettings,
   })  : assert(start < end, "Start should be grater then end"),
         _start = start,
         _end = end,
@@ -80,7 +81,31 @@ class RenderLinearGauge extends RenderBox {
         _extendLinearGauge = extendLinearGauge,
         _fillExtend = fillExtend,
         _pointerAnimation = pointerAnimation,
-        _valueBarAnimation = valueBarAnimation;
+        _valueBarAnimation = valueBarAnimation {
+    _drag = HorizontalDragGestureRecognizer()
+      ..onDown = (DragDownDetails details) {
+        print("staring 01");
+        _startPointerInteractivity(details.localPosition, 1);
+      }
+      ..onEnd = (DragEndDetails details) {
+        _endPointerInteractivity();
+      }
+      ..onStart = (DragStartDetails details) {
+        print("staring 02");
+        _startPointerInteractivity(details.localPosition, 1);
+      }
+      ..gestureSettings = getGestureSettings
+      ..onUpdate = (DragUpdateDetails details) {
+        _updatePointerInteractivity(details.localPosition, 1);
+      };
+  }
+
+// Dispose the drag gesture recognizer
+  @override
+  void detach() {
+    _drag.dispose();
+    super.detach();
+  }
 
   // For getting Gauge Values
   double gaugeStart = 0;
@@ -114,6 +139,18 @@ class RenderLinearGauge extends RenderBox {
   set setGaugeAnimation(Animation<double>? gaugeAnimation) {
     if (_gaugeAnimation == gaugeAnimation) return;
     _gaugeAnimation = gaugeAnimation;
+    markNeedsPaint();
+  }
+
+  ///
+  /// Getter and Setter for the [_gestureSettings] parameter.
+  ///
+  DeviceGestureSettings? get getGestureSettings => _gestureSettings;
+  DeviceGestureSettings? _gestureSettings;
+
+  set setGestureSettings(DeviceGestureSettings? gestureSettings) {
+    if (_gestureSettings == gestureSettings) return;
+    _gestureSettings = gestureSettings;
     markNeedsPaint();
   }
 
@@ -556,10 +593,77 @@ class RenderLinearGauge extends RenderBox {
     _addAnimationListener();
   }
 
+  /// Gesture Recognizer for the Linear Gauge.
+  late HorizontalDragGestureRecognizer _drag;
+
+  // ActivePointerIndex tracks the index of the pointer that is currently being
+  // interacted with. If no pointer is being interacted with, the value is null.
+  // late int activePointerIndex;
+  List activePointerIndices = [];
+
+  //HitTest determines whether the pointer in the gauge is being interacted with.
   @override
-  void detach() {
-    _removeAnimationListeners();
-    super.detach();
+  bool hitTestSelf(
+    Offset position,
+  ) {
+    int safetyBuffer = 2;
+
+    for (int i = 0; i < getPointers.length; i++) {
+      double dx0 = position.dx / gaugeEnd * (getEnd - getStart) + getStart;
+      double dy0 = position.dy / gaugeEnd * (getEnd - getStart) + getStart;
+
+      // [pointerHorizontalDiff] and [pointerVerticalDiff] are the difference in
+      // the pointer's position and the position of the pointer being interacted
+      double pointerHorizontalDiff =
+          ((valueToPixel(dx0) - gaugeStart - _extendLinearGauge) -
+              (valueToPixel(getPointers[i].value!)));
+      double inverseHorizontalDiff = ((gaugeEnd - valueToPixel(dx0)) -
+          (valueToPixel(getPointers[i].value!)));
+      double inverseVerticalDiff = ((valueToPixel(dy0) - gaugeStart) -
+          (valueToPixel(getPointers[i].value!)));
+      double pointerVerticalDiff = ((gaugeEnd - valueToPixel(dy0)) -
+          (valueToPixel(getPointers[i].value!)));
+      print(pointerHorizontalDiff);
+      final bool isHit = !_inversedRulers
+          ? (getGaugeOrientation == GaugeOrientation.horizontal &&
+                  pointerHorizontalDiff.abs().toInt() <
+                      safetyBuffer + getPointers[i].width! / 2) ||
+              (getGaugeOrientation == GaugeOrientation.vertical &&
+                  pointerVerticalDiff.abs().toInt() <
+                      safetyBuffer + getPointers[i].width! / 2)
+          : (getGaugeOrientation == GaugeOrientation.horizontal &&
+              inverseHorizontalDiff.abs().toInt() <
+                  safetyBuffer + getPointers[i].width! / 2);
+
+      if (isHit) {
+        if (!activePointerIndices.contains(i) &&
+            getPointers[i].enableInteractivity) {
+          activePointerIndices.add(i);
+        }
+        return true;
+      }
+    }
+    return true;
+  }
+
+  // PointerDeviceKind is used to determine the type of pointer being interacted
+  PointerDeviceKind pointerType = PointerDeviceKind.mouse;
+
+  // HandleEvent determines the type of event and updates the pointer value
+  @override
+  void handleEvent(PointerEvent event, BoxHitTestEntry entry) {
+    assert(debugHandleEvent(event, entry));
+
+    if (event is PointerDownEvent) {
+      pointerType = event.kind;
+      _drag.addPointer(event);
+    } else if (event is PointerUpEvent) {
+      // _drag.dispose();
+      // activePointerIndices.clear();
+      _endPointerInteractivity();
+    }
+
+    super.handleEvent(event, entry);
   }
 
   ///
@@ -1995,8 +2099,65 @@ class RenderLinearGauge extends RenderBox {
     canvas.restore();
   }
 
+  double pixelToValue(double pixel) {
+    final double value = (pixel / gaugeEnd) * (getEnd - getStart) + getStart;
+    return value;
+  }
+
   double valueToPixel(double value) {
     final double pixel = ((value - getStart) / (getEnd - getStart)) * gaugeEnd;
     return pixel;
+  }
+
+  // void _updateThumbPosition(Offset localPosition) {
+  //   var dx = localPosition.dx.clamp(0, size.width);
+  //   var dy = localPosition.dy.clamp(0, size.height);
+
+  //   if (getGaugeOrientation == GaugeOrientation.horizontal) {
+  //     // if (calculateNearBy(double.parse(dx.toString()))) {
+  //     getPointers.first.value = double.parse(
+  //         (dx / size.width * (getEnd - getStart) + getStart)
+  //             .toStringAsFixed(2));
+  //     //! Inverse
+  // getPointers.first.value = double.parse(
+  //     (dx / size.width * (getStart - getEnd) + getEnd).toStringAsFixed(2));
+
+  // }
+  //   } else {
+  //     getPointers.first.value = double.parse(
+  //         ((size.height - dy) / size.height * (getEnd - getStart) + getStart)
+  //             .toStringAsFixed(2));
+  //   }
+  //   markNeedsPaint();
+  //   markNeedsSemanticsUpdate();
+  // }
+
+  void _updatePointerInteractivity(Offset localPosition, int i) {
+    if (activePointerIndices.isNotEmpty) {
+      getPointers[activePointerIndices.first]
+          .updateInteractivity(localPosition, this);
+    }
+
+    markNeedsPaint();
+    markNeedsSemanticsUpdate();
+  }
+
+  void _startPointerInteractivity(Offset localPosition, int i) {
+    if (pointerType == PointerDeviceKind.mouse) {
+      activePointerIndices.clear();
+    }
+
+    if (activePointerIndices.isNotEmpty) {
+      getPointers[activePointerIndices.first]
+          .startInteractivity(localPosition, this);
+    }
+
+    markNeedsPaint();
+    markNeedsSemanticsUpdate();
+  }
+
+  void _endPointerInteractivity() {
+    // getPointers[activePointerIndices[0]].color = Colors.blue;
+    activePointerIndices.clear();
   }
 }
