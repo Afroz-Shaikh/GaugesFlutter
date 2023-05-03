@@ -632,8 +632,11 @@ class RenderLinearGauge extends RenderBox {
                   pointerVerticalDiff.abs().toInt() <
                       safetyBuffer + getPointers[i].width! / 2)
           : (getGaugeOrientation == GaugeOrientation.horizontal &&
-              inverseHorizontalDiff.abs().toInt() <
-                  safetyBuffer + getPointers[i].width! / 2);
+                  inverseHorizontalDiff.abs().toInt() <
+                      safetyBuffer + getPointers[i].width! / 2) ||
+              (getGaugeOrientation == GaugeOrientation.vertical &&
+                  inverseVerticalDiff.abs().toInt() <
+                      safetyBuffer + getPointers[i].width! / 2);
 
       if (isHit) {
         if (!activePointerIndices.contains(i) &&

@@ -6,7 +6,7 @@ void main() {
     MaterialApp(
       theme: ThemeData.light(),
       debugShowCheckedModeBanner: false,
-      home: const VerticalGauge(),
+      home: const MyGaugeExample(),
     ),
   );
 }
@@ -18,12 +18,12 @@ class VerticalGauge extends StatelessWidget {
     return Scaffold(
       body: Center(
         child: LinearGauge(
-          extendLinearGauge: 30,
-          start: 10,
-          end: 200,
+          // extendLinearGauge: 30,
+          start: 0,
+          end: 100,
           pointers: [
             Pointer(
-                value: 50,
+                value: 20,
                 showLabel: false,
                 width: 20,
                 height: 20,
@@ -45,9 +45,9 @@ class VerticalGauge extends StatelessWidget {
                 color: Colors.amber,
                 enableAnimation: true),
           ],
-          gaugeOrientation: GaugeOrientation.horizontal,
+          gaugeOrientation: GaugeOrientation.vertical,
           rulers: RulerStyle(
-              rulerPosition: RulerPosition.bottom, inverseRulers: false),
+              rulerPosition: RulerPosition.left, inverseRulers: true),
         ),
       ),
     );
@@ -85,7 +85,7 @@ class _MyGaugeExampleState extends State<MyGaugeExample> {
                     pointerAlignment: PointerAlignment.center,
                     pointerPosition: PointerPosition.top,
                     height: 45,
-                    shape: PointerShape.triangle,
+                    shape: shape,
                     color: Colors.white,
                     enableAnimation: true),
                 // Pointer(
