@@ -10,16 +10,16 @@ class NeedlePointer extends LeafRenderObjectWidget {
       {Key? key,
       required this.value,
       this.color = Colors.red,
-      this.needleHeight = 20,
-      this.pointerRadius = 200,
+      this.needleWidth = 10,
+      this.needleHeight = 350,
       this.tailRadius = 20})
       : super(key: key);
 
   final double value;
   final Color color;
   final double needleHeight;
+  final double needleWidth;
   final double tailRadius;
-  final double pointerRadius;
 
   @override
   RenderObject createRenderObject(BuildContext context) {
@@ -30,8 +30,8 @@ class NeedlePointer extends LeafRenderObjectWidget {
       value: value,
       color: color,
       needleHeight: needleHeight,
+      needleWidth: needleWidth,
       tailRadius: tailRadius,
-      pointerRadius: pointerRadius,
     );
   }
 
@@ -44,7 +44,7 @@ class NeedlePointer extends LeafRenderObjectWidget {
       ..setColor = color
       ..setNeedleHeight = needleHeight
       ..setTailRadius = tailRadius
-      ..setPointerRadius = pointerRadius
+      ..setNeedleWidth = needleWidth
       ..setRadialGauge = scope.rGauge;
   }
 }
@@ -57,14 +57,15 @@ class RenderNeedlePointer extends RenderBox {
     required RadialGauge radialGauge,
     required double needleHeight,
     required double tailRadius,
-    required double pointerRadius,
+    required double needleWidth,
+
     // required RadialTrack track,
   })  : _value = value,
         _color = color,
         _radialGauge = radialGauge,
         _needleHeight = needleHeight,
         _tailRadius = tailRadius,
-        _pointerRadius = pointerRadius,
+        _needleWidth = needleWidth,
         super();
 
   RadialGauge get getRadialGauge => _radialGauge!;
@@ -83,19 +84,19 @@ class RenderNeedlePointer extends RenderBox {
     markNeedsPaint();
   }
 
+  double get getNeedleWidth => _needleWidth;
+  double _needleWidth;
+  set setNeedleWidth(double needleWidth) {
+    if (_needleWidth == needleWidth) return;
+    _needleWidth = needleWidth;
+    markNeedsPaint();
+  }
+
   double get getTailRadius => _tailRadius;
   double _tailRadius;
   set setTailRadius(double tailRadius) {
     if (_tailRadius == tailRadius) return;
     _tailRadius = tailRadius;
-    markNeedsPaint();
-  }
-
-  double get getPointerRadius => _pointerRadius;
-  double _pointerRadius;
-  set setPointerRadius(double pointerRadius) {
-    if (_pointerRadius == pointerRadius) return;
-    _pointerRadius = pointerRadius;
     markNeedsPaint();
   }
 
@@ -122,13 +123,12 @@ class RenderNeedlePointer extends RenderBox {
 
   @override
   Size computeDryLayout(BoxConstraints constraints) {
-    return constraints.constrain(const Size(200, 200));
+    return constraints.constrain(constraints.biggest);
   }
 
   @override
   void performLayout() {
-    size = Size(_tailRadius,
-        _tailRadius > _needleHeight ? _tailRadius : _needleHeight + 100);
+    size = computeDryLayout(constraints);
   }
 
   @override
@@ -139,82 +139,49 @@ class RenderNeedlePointer extends RenderBox {
     Rect circle = Rect.fromLTWH(offset.dx, offset.dy, size.width, _tailRadius);
     Path circlePath = Path()..addOval(circle);
 
-    double strokeWidth = 13;
+    double strokeWidth = _needleWidth;
 
-    canvas.drawPath(circlePath, Paint()..color = _color);
-    final needlePaint = Paint()
-      ..color = _color
-      ..strokeWidth = strokeWidth
-      ..strokeCap = StrokeCap.round;
+    LinearGradient gradient = LinearGradient(
+      colors: [Colors.grey, Colors.grey],
+      begin: _value > 50 ? Alignment.centerRight : Alignment.centerLeft,
+      end: _value > 50 ? Alignment.centerLeft : Alignment.centerRight,
+    );
 
-    double value = _value;
+    double gaugeStart = _radialGauge!.track.start;
+    double gaugeEnd = _radialGauge!.track.end;
 
+    double value = calculateValueAngle(_value, gaugeStart, gaugeEnd);
     double startAngle = _radialGauge!.track.startAngle * (pi / 180);
     double endAngle = _radialGauge!.track.endAngle * (pi / 180);
 
-    // final rotationPivotX = rectLeft + (rectWidth / 2);
-    // final rotationPivotY = rectTop;
+    final double needleMultiplier = _needleHeight;
 
-    // final double angle = startAngle + (value / 100) * (endAngle - startAngle);
+    final double angle = startAngle + (value / 100) * (endAngle - startAngle);
 
-    // // canvas.drawLine(rectCenter, Offset(needleEndX, needleEndY), needlePaint);
-    // Rect needleRect = Rect.fromLTWH(offset.dx + getTailRadius / 2 - 10,
-    //     offset.dy + getTailRadius / 2 - 10, 20, 300);
+    final double needleEndX =
+        center.dx + getTailRadius / 2 + needleMultiplier * cos(angle);
+    final double needleEndY =
+        center.dy + getTailRadius / 2 + needleMultiplier * sin(angle);
 
-    // Path needlePath = Path()..addRect(needleRect);
-    // // canvas.save();
+    final needlePaint = Paint()
+      ..color = _color
+      ..strokeWidth = strokeWidth
+      ..shader = gradient.createShader(Rect.fromPoints(
+        Offset(center.dx + getTailRadius / 2, center.dy + getTailRadius / 2),
+        Offset(needleEndX, needleEndY),
+      ))
+      ..strokeCap = StrokeCap.round;
+    canvas.drawLine(
+        Offset(center.dx + getTailRadius / 2, center.dy + getTailRadius / 2),
+        Offset(needleEndX, needleEndY),
+        needlePaint);
 
-    // canvas.translate(needleRect.left + 10, needleRect.top);
-    // canvas.rotate(((angle) * 0.0174533));
-
-    // canvas.translate(-needleRect.left, -needleRect.top);
-    // canvas.drawPath(needlePath, needlePaint..color = Colors.red);
-    // canvas.restore();
-    // canvas.save();
-    final needleLength = 500.0;
-    final needleWidth = 4.0;
-
-    final paint = Paint()
-      ..color = Colors.black
-      ..style = PaintingStyle.fill;
-
-    double sAngle = getRadialGauge.track.startAngle;
-    double eAngle = getRadialGauge.track.endAngle;
-    final rotationAngle = sAngle + _value * ((eAngle - sAngle) / 100);
-    canvas.translate(
-        center.dx + getTailRadius / 2, center.dy + getTailRadius / 2);
-    canvas.rotate(rotationAngle * (pi / 180));
-
-    final path = Path();
-    path.moveTo(-needleWidth / 2, 0);
-    path.lineTo(needleWidth / 2, 0);
-    // path.lineTo(needleWidth / 2, -needleLength);
-    // path.lineTo(-needleWidth / 2, -needleLength);
-    // path.close();
-    // final startAngle = getRadialGauge.track.startAngle;
-    // final endAngle = getRadialGauge.track.endAngle;
-
-    var rotate = convertValueToAngle(value, sAngle, eAngle);
-    // print(rotate);
-
-    final angleRange = eAngle - sAngle;
-    final pointerAngle = (rotationAngle / 100) * angleRange + sAngle;
-
-    final x = (needleLength * sin(pointerAngle * pi / 180)).toDouble();
-    final y = (-needleLength * cos(pointerAngle * pi / 180)).toDouble();
-    path.lineTo(x, y);
-    path.close();
-    canvas.drawPath(path, paint);
+    canvas.drawPath(circlePath, Paint()..color = _color);
   }
-}
 
-double convertValueToAngle(double value, double startAngle, double endAngle) {
-  double range = (endAngle - startAngle);
-  double rotationAngle = value * range;
-  double p = startAngle + range * (value / 100);
+  double calculateValueAngle(double value, double gaugeStart, double gaugeEnd) {
+    double newValue = (value - gaugeStart) / (gaugeEnd - gaugeStart) * 100;
 
-  print("rotationAngle: $p");
-
-  double degrees = rotationAngle * (180 / pi); // Convert radians to degrees
-  return degrees;
+    return newValue;
+  }
 }

@@ -77,7 +77,7 @@ class _MyValueBarPositionState extends State<MyValueBarPosition> {
           // ],
           linearGaugeBoxDecoration:
               const LinearGaugeBoxDecoration(thickness: 10),
-          rulers: const RulerStyle(
+          rulers: RulerStyle(
               inverseRulers: true,
               rulerPosition: RulerPosition.top,
               showLabel: true),

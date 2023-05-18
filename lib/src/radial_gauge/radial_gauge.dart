@@ -23,7 +23,9 @@ class RadialGauge extends StatefulWidget {
   const RadialGauge({
     Key? key,
     required this.track,
-    this.needlePointer,
+    this.needlePointer = const NeedlePointer(
+      value: 0,
+    ),
     // List<RadialTrack>? track,
   }) : super(key: key);
 
@@ -78,6 +80,7 @@ class _RadialGaugeState extends State<RadialGauge> {
     //   _radialGaugeWidgets.add(w!);
     // }
 
+//!
     if (widget.needlePointer != null) {
       _addChild(widget.needlePointer!, null, null);
     }
@@ -110,7 +113,7 @@ class RRadialGauge extends MultiChildRenderObjectWidget {
   @override
   RenderObject createRenderObject(BuildContext context) {
     return RenderRadialGauge(
-      needlePointer: rGauge.needlePointer!,
+      needlePointer: rGauge.needlePointer,
       track: rGauge.track,
     );
   }
@@ -134,6 +137,7 @@ class RenderRadialGauge extends RenderBox
     required RadialTrack track,
     required NeedlePointer? needlePointer,
   })  : _track = track,
+        _needlePointer = needlePointer,
         super();
 
   RadialTrack get getTrack => _track;
@@ -159,12 +163,26 @@ class RenderRadialGauge extends RenderBox
     while (child != null) {
       final MultiChildLayoutParentData childParentData =
           child.parentData as MultiChildLayoutParentData;
-      child.layout(constraints, parentUsesSize: true);
+
+      if (child is RenderRadialGaugeContainer) {
+        childParentData.offset = Offset(size.width, size.height);
+        print("RadialGaugeContainer ${childParentData.offset}");
+        final childConstraints = BoxConstraints(
+          maxWidth: size.width,
+          maxHeight: size.height,
+        );
+        child.layout(childConstraints, parentUsesSize: true);
+      }
 
       if (child is RenderNeedlePointer) {
         childParentData.offset = Offset(
             size.width / 2 - (child.getTailRadius / 2),
             (size.height / 2) - (child.getTailRadius / 2));
+        final childConstraints = BoxConstraints(
+          maxWidth: child.getTailRadius,
+          maxHeight: child.getTailRadius,
+        );
+        child.layout(childConstraints, parentUsesSize: true);
       } else {
         childParentData.offset = Offset.zero;
       }
@@ -179,7 +197,10 @@ class RenderRadialGauge extends RenderBox
 
   @override
   Size computeDryLayout(BoxConstraints constraints) {
-    return constraints.biggest;
+    final double actualWidth = constraints.maxWidth;
+    final double actualHeight = constraints.maxHeight;
+
+    return constraints.constrain(Size(actualWidth, actualHeight));
   }
 
   @override

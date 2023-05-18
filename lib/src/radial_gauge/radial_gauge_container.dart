@@ -33,6 +33,8 @@ class RenderRadialGaugeContainer extends RenderBox {
   })  : _radialGauge = radialGauge,
         super();
 
+  late double _thickness = _radialGauge.track.thickness;
+
   RadialGauge get getRadialGauge => _radialGauge;
   RadialGauge _radialGauge;
   set setRadialGauge(RadialGauge radialGauge) {
@@ -48,7 +50,7 @@ class RenderRadialGaugeContainer extends RenderBox {
 
   @override
   Size computeDryLayout(BoxConstraints constraints) {
-    return constraints.constrain(const Size(100, 100));
+    return constraints.constrain(constraints.biggest);
   }
 
   @override
@@ -72,21 +74,35 @@ class RenderRadialGaugeContainer extends RenderBox {
       startAngle = endAngle;
       endAngle = temp;
     }
+
+    var thickness = getRadialGauge.track.thickness;
+    double shortestSide = size.shortestSide;
+
+    double rulerLength = getRadialGauge.track.trackStyle!.primaryRulersHeight!;
+    //     getRadialGauge.track.rulerStyle?.primaryRulersHeight ?? 20.0;
     double arcLength = endAngle - startAngle; // length of the arc in radians
     const int numParts = 10; // number of parts to divide the arc into
     double partAngle = arcLength / numParts; // angle of each part in radians
+    double radius = shortestSide / 2 - thickness; // radius of the arc
+    final center = offset + size.center(Offset.zero);
+
+    Rect c = Rect.fromCircle(center: center, radius: radius);
     final Paint containerPaint = Paint()
       ..color = getRadialGauge.track.color
       ..strokeCap = StrokeCap.round
-      ..strokeWidth = getRadialGauge.track.thickness
+      ..strokeWidth = thickness
       ..style = PaintingStyle.stroke;
-    var thickness = getRadialGauge.track.thickness;
-    double shortestSide = size.shortestSide;
-    double radius = shortestSide / 2 - thickness; // radius of the arc
-    final center = Offset(size.width / 2, size.height / 2);
-    const double rulerLength = 20.0; // length of each ruler
-    Rect c = Rect.fromCircle(center: center, radius: radius);
+
+    if (getRadialGauge.track.gradient != null) {
+      LinearGradient gradient = getRadialGauge.track.gradient!;
+      containerPaint.shader = gradient.createShader(c);
+    }
+
+    // length of each ruler
+
     canvas.drawArc(c, startAngle, arcLength, false, containerPaint);
+
+    Color textColor = Colors.black;
 
     for (int i = 0; i <= numParts; i++) {
       final double angle =
@@ -101,10 +117,36 @@ class RenderRadialGaugeContainer extends RenderBox {
           (radius - rulerLength - 20 - thickness) * cos(angle),
           (radius - rulerLength - 20 - thickness) * sin(angle));
 
-      // Draw the ruler
-      canvas.drawLine(center + startPoint, center + endPoint, paint);
+      var numSecondaryRulers = 5;
+      var secondaryRulerLength = 10.0;
 
-      //! DRAW ANGLE LABEL
+      final double secondaryRulerAngle = partAngle / (numSecondaryRulers + 1);
+
+      // Draw the primary Ruler
+      canvas.drawLine(center + startPoint, center + endPoint, paint);
+      if (i != numParts) {
+        for (int j = 1; j <= numSecondaryRulers; j++) {
+          final double secondaryAngle = angle + (j * secondaryRulerAngle);
+          final Offset secondaryStartPoint = Offset(
+              (radius - thickness) * cos(secondaryAngle),
+              (radius - thickness) * sin(secondaryAngle));
+
+          final Offset secondaryEndPoint = Offset(
+              ((radius - thickness) - secondaryRulerLength) *
+                  cos(secondaryAngle),
+              ((radius - thickness) - secondaryRulerLength) *
+                  sin(secondaryAngle));
+
+          canvas.drawLine(
+              center + secondaryStartPoint,
+              center + secondaryEndPoint,
+              Paint()
+                ..color = textColor
+                ..strokeWidth = 1);
+        }
+      }
+
+      //! DRAW Primary LABEL
       final TextPainter textPainter =
           TextPainter(textDirection: TextDirection.ltr);
       const String labelFormat = '%d';
@@ -115,12 +157,19 @@ class RenderRadialGaugeContainer extends RenderBox {
           '%d', ((langle - startAngle) * 180 / pi).round().toString());
       double l = double.parse(label);
       // print(object)
-      double labelRuler = (l - startAngle) / (endAngle - startAngle) * 100;
+      double sAngle = _radialGauge.track.startAngle;
+      double eAngle = _radialGauge.track.endAngle;
+
+      double range = eAngle - sAngle;
+      double start = _radialGauge.track.start;
+      double end = _radialGauge.track.end;
+      double valueRange = (end - start);
+
+      double exactValue = start + ((l / range) * valueRange).roundToDouble();
 
       textPainter.text = TextSpan(
-          text: l.toString(),
-          style: const TextStyle(
-              color: Colors.black, fontWeight: FontWeight.bold));
+          text: exactValue.toString(),
+          style: TextStyle(color: textColor, fontWeight: FontWeight.bold));
       textPainter.layout();
 
       final Offset labelOffset = Offset(

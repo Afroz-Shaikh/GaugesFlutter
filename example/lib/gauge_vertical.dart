@@ -23,7 +23,7 @@ class _MyVerticalGaugeState extends State<MyVerticalGauge> {
                     colors: [Color(0xff4f76fc), Color(0xfff882fc)])),
             // enableAnimation: true,
             gaugeOrientation: GaugeOrientation.horizontal,
-            rulers: const RulerStyle(
+            rulers: RulerStyle(
               primaryRulersWidth: 10,
               primaryRulersHeight: 30,
               primaryRulerColor: Color(0xff310072),
